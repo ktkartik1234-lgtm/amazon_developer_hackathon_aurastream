@@ -84,3 +84,23 @@ def test_fallback_stream():
     """Assert unknown streams fall back safely without error."""
     telem = get_telemetry_for_timestamp("unknown_stream_xyz", 50.0)
     assert telem.title is not None
+
+
+def test_telemetry_subtitles():
+    """Assert all 4 client streams provide synchronized dialogue and commentary cues (BUG-14)."""
+    sintel_telem = get_telemetry_for_timestamp("stream_sintel", 10.0)
+    assert sintel_telem.subtitles is not None
+    assert "Scales" in sintel_telem.subtitles
+
+    sports_telem = get_telemetry_for_timestamp("stream_sports", 20.0)
+    assert sports_telem.subtitles is not None
+    assert "Commentator" in sports_telem.subtitles
+
+    oceans_telem = get_telemetry_for_timestamp("stream_oceans", 15.0)
+    assert oceans_telem.subtitles is not None
+    assert "Dr. Earle" in oceans_telem.subtitles
+
+    sailing_telem = get_telemetry_for_timestamp("stream_sailing", 25.0)
+    assert sailing_telem.subtitles is not None
+    assert "Captain Mateo" in sailing_telem.subtitles
+

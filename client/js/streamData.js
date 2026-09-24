@@ -43,7 +43,8 @@ window.AuraSceneDatabase = {
         ],
         "soundtrack": "Jan Morgenstern - The Quest (Original Orchestral Score)",
         "trivia_fact": "Directed by Colin Levy and produced by Blender Animation Studio. Rendered entirely on open-source pipelines.",
-        "plot_summary": "Sintel traverses unforgiving snowy peaks, nursing an injured baby dragon back to health before it is abducted by an adult dragon."
+        "plot_summary": "Sintel traverses unforgiving snowy peaks, nursing an injured baby dragon back to health before it is abducted by an adult dragon.",
+        "subtitles": "[Sintel] Scales... wake up, little one. The snow is clearing over the mountain pass."
       },
       {
         "time_range": [
@@ -76,7 +77,8 @@ window.AuraSceneDatabase = {
         ],
         "soundtrack": "Jan Morgenstern - Salt Tears (Dolby Atmos)",
         "trivia_fact": "Character rigging for Sintel introduced advanced procedural facial deformation systems to Blender 2.5.",
-        "plot_summary": "Sintel confronts the ancient Shaman in the desert ruins, receiving foreboding omens regarding the perilous mountain ascent."
+        "plot_summary": "Sintel confronts the ancient Shaman in the desert ruins, receiving foreboding omens regarding the perilous mountain ascent.",
+        "subtitles": "[The Shaman] The path over the volcano is perilous. The dragon you seek answers to no mortal."
       }
     ]
   },
@@ -115,7 +117,8 @@ window.AuraSceneDatabase = {
         ],
         "soundtrack": "BBC Philharmonic - Symphony of the Pelagic Abyss",
         "trivia_fact": "Filmed in 8K HDR at 4,000 meters depth using specialized pressure-sealed optical quartz domes.",
-        "plot_summary": "Submersible expedition documents infrasonic whale vocalizations and discovers pristine deep-water kelp sanctuaries."
+        "plot_summary": "Submersible expedition documents infrasonic whale vocalizations and discovers pristine deep-water kelp sanctuaries.",
+        "subtitles": "[Dr. Earle] Hydrophone frequency at 18 Hertz. We are tracking a matriarch blue whale."
       },
       {
         "time_range": [
@@ -142,7 +145,8 @@ window.AuraSceneDatabase = {
         ],
         "soundtrack": "Brian Eno - Pelagic Drift (Ambient Spatial Audio)",
         "trivia_fact": "Siphonophores in the Mariana Trench coordinate thousands of specialized zooids to hunt in absolute darkness.",
-        "plot_summary": "Descending into the aphotic midnight zone, exploring alien bioluminescent colonies and hydrothermal vents."
+        "plot_summary": "Descending into the aphotic midnight zone, exploring alien bioluminescent colonies and hydrothermal vents.",
+        "subtitles": "[Dr. Earle] Passing 3,000 meters. The siphonophore colony is initiating synchronous bioluminescence."
       }
     ]
   },
@@ -185,7 +189,8 @@ window.AuraSceneDatabase = {
         ],
         "soundtrack": "Coastal Horizons - Pacific Breezes (Acoustic 24-bit 96kHz)",
         "trivia_fact": "Filmed around the Marino Ballena National Park, renowned for its naturally formed whale-tail sandbar.",
-        "plot_summary": "Sailing through crystalline Pacific shoals as humpback mothers nurse calves in protected tropical estuaries."
+        "plot_summary": "Sailing through crystalline Pacific shoals as humpback mothers nurse calves in protected tropical estuaries.",
+        "subtitles": "[Captain Mateo] Bearing 190 degrees south by southwest. Look at that whale breach off the sandbar!"
       }
     ]
   },
@@ -230,7 +235,8 @@ window.AuraSceneDatabase = {
           "expected_goals_xg": 1.84,
           "active_tactical_formation": "4-3-3 High Press"
         },
-        "plot_summary": "High-stakes European final tied at 1-1, Madrid executing a rapid transition against Manchester's high line."
+        "plot_summary": "High-stakes European final tied at 1-1, Madrid executing a rapid transition against Manchester's high line.",
+        "subtitles": "[Commentator] Madrid pressing aggressively in their 4-3-3 shape. Silva breaks through on the counter!"
       }
     ]
   },
@@ -269,7 +275,8 @@ window.AuraSceneDatabase = {
         ],
         "soundtrack": "Hans Zimmer - Stellar Horizons (Dolby Atmos Spatial)",
         "trivia_fact": "The orbital physics simulation shown on the cockpit HUD was mathematically calculated using actual JPL ephemeris data.",
-        "plot_summary": "The crew of the Voyager investigates anomalous electromagnetic signals emanating from the Europa ocean."
+        "plot_summary": "The crew of the Voyager investigates anomalous electromagnetic signals emanating from the Europa ocean.",
+        "subtitles": "[Commander Hayes] Approaching Europa orbit. All telemetry locked on the subsurface acoustic emitter."
       }
     ]
   },
@@ -314,7 +321,8 @@ window.AuraSceneDatabase = {
           "expected_goals_xg": 1.84,
           "active_tactical_formation": "4-3-3 High Press"
         },
-        "plot_summary": "High-stakes European final tied at 1-1, Madrid executing a rapid transition against Manchester's high line."
+        "plot_summary": "High-stakes European final tied at 1-1, Madrid executing a rapid transition against Manchester's high line.",
+        "subtitles": "[Commentator] Madrid pressing aggressively in their 4-3-3 shape. Silva breaks through on the counter!"
       }
     ]
   }

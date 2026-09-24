@@ -741,8 +741,12 @@ html, body {
 }
 
 .shelf-tile .tile-meta {
-  position: relative;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 2;
+  padding: 8px 12px;
 }
 
 /* ==========================================================================
@@ -979,4 +983,36 @@ html, body {
   text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 16px;
+}
+
+/* ==========================================================================
+   Synchronized High-Contrast TV Subtitle Track (BUG-14)
+   ========================================================================== */
+.vtt-subtitle-display {
+  position: absolute;
+  bottom: 470px;
+  left: 720px;
+  transform: translateX(-50%);
+  max-width: 850px;
+  padding: 12px 28px;
+  background: rgba(5, 8, 17, 0.92);
+  border: 1px solid rgba(0, 168, 225, 0.4);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95);
+  z-index: 30;
+  transition: all 0.25s ease;
+  pointer-events: none;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7);
+}
+
+.vtt-subtitle-display.large {
+  font-size: 26px;
+  padding: 16px 36px;
+  border-color: rgba(0, 168, 225, 0.7);
 }

@@ -31,6 +31,7 @@ class SceneTelemetry(BaseModel):
     soundtrack: Optional[str] = Field(default=None, description="Currently playing audio track")
     trivia_fact: Optional[str] = Field(default=None, description="Contextual production fact")
     sports_telemetry: Optional[Dict[str, Any]] = Field(default=None, description="Live player/ball stats if sports")
+    subtitles: Optional[str] = Field(default=None, description="Synchronized dialogue/commentary subtitle cue")
 
 
 class TriviaCard(BaseModel):

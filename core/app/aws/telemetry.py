@@ -49,6 +49,7 @@ def _load_canonical_scenes() -> Dict[str, Dict[str, Any]]:
                 "trivia_fact": entry.get("trivia_fact"),
                 "sports_telemetry": entry.get("sports_telemetry"),
                 "plot_summary": entry.get("plot_summary", ""),
+                "subtitles": entry.get("subtitles"),
             })
 
         parsed_db[stream_id] = {
@@ -99,6 +100,7 @@ def get_telemetry_for_timestamp(stream_id: str, timestamp: float) -> SceneTeleme
             soundtrack=matched_entry.get("soundtrack"),
             trivia_fact=matched_entry.get("trivia_fact"),
             sports_telemetry=matched_entry.get("sports_telemetry"),
+            subtitles=matched_entry.get("subtitles"),
         )
 
     return SceneTelemetry(

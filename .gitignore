@@ -26,3 +26,5 @@ Thumbs.db
 *.tmp
 *.log
 *.egg-info/
+client/previews/
+client/*.png

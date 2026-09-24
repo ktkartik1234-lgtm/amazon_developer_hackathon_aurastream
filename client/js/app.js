@@ -142,9 +142,11 @@ document.addEventListener('DOMContentLoaded', () => {
         window.AuraOverlay.showCards(res.trivia_cards);
       } else if (action === 'ambient') {
         const res = await window.AuraStreamAPI.adaptAmbient('family', 'medium', 'PG-13');
+        const nextState = !subtitlesEnabled;
+        setSubtitles(nextState, false);
         window.showToast(
           'Aura Living Room Ambient Mode Active',
-          'Dialogue Boost: +4.5dB • Subtitles: Adaptive ON • Rating Cap: PG-13'
+          `Dialogue Boost: +4.5dB • Subtitles: Adaptive ${nextState ? 'ON' : 'OFF'} • Rating Cap: PG-13`
         );
       } else if (action === 'switch-stream') {
         const nextStream =
@@ -156,8 +158,50 @@ document.addEventListener('DOMContentLoaded', () => {
             ? 'stream_sports'
             : 'stream_sintel';
         player.switchStream(nextStream);
+        updateSubtitleCue(player.activeStreamId, 0);
       }
     });
+  });
+
+  // Subtitle Synchronization Engine (BUG-14)
+  let subtitlesEnabled = false;
+
+  function setSubtitles(enabled, isLarge = false) {
+    subtitlesEnabled = enabled;
+    const subEl = document.getElementById('vtt-subtitle-display');
+    if (!subEl) return;
+    if (subtitlesEnabled) {
+      if (isLarge) subEl.classList.add('large');
+      else subEl.classList.remove('large');
+      updateSubtitleCue(player.activeStreamId, player.currentTime);
+    } else {
+      subEl.style.display = 'none';
+    }
+  }
+
+  function updateSubtitleCue(streamId, currentTime) {
+    if (!subtitlesEnabled) return;
+    const subEl = document.getElementById('vtt-subtitle-display');
+    if (!subEl) return;
+    const cue = window.AuraOverlay.getActiveSubtitle(streamId, currentTime);
+    if (cue) {
+      subEl.innerText = cue;
+      subEl.style.display = 'block';
+    } else {
+      subEl.style.display = 'none';
+    }
+  }
+
+  // Keyboard shortcut C for Closed Captions toggle
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'c' || e.key === 'C') {
+      const nextState = !subtitlesEnabled;
+      setSubtitles(nextState, false);
+      window.showToast(
+        nextState ? 'Subtitles ON' : 'Subtitles OFF',
+        nextState ? 'Adaptive living room subtitles enabled' : 'Subtitles disabled'
+      );
+    }
   });
 
   // Sync HUD telemetry on timeupdate
@@ -165,6 +209,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('tv:timeupdate', async (e) => {
     const { currentTime, streamId } = e.detail;
     const currentInt = Math.floor(currentTime);
+
+    // Update subtitles in real-time
+    updateSubtitleCue(streamId, currentTime);
 
     if (currentInt % 4 === 0 && currentInt !== lastFetchedSecond) {
       lastFetchedSecond = currentInt;

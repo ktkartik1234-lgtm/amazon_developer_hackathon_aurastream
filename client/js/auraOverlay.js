@@ -219,6 +219,19 @@ class AuraOverlayManager {
       }
     }, 200);
   }
+
+  getActiveSubtitle(streamId, currentTime) {
+    const db = window.AuraSceneDatabase;
+    if (!db || !db[streamId]) return null;
+    const timeline = db[streamId].timeline || [];
+    for (const entry of timeline) {
+      const [start, end] = entry.time_range;
+      if (currentTime >= start && currentTime <= end) {
+        return entry.subtitles || null;
+      }
+    }
+    return null;
+  }
 }
 
 window.AuraOverlay = new AuraOverlayManager();
