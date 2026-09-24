@@ -14,8 +14,9 @@
 2. **Start Backend Server**:
    ```bash
    cd amazon_developer_hackathon_aurastream
-   python -m uvicorn core.app.main:app --host 127.0.0.1 --port 8000
+   python run.py
    ```
+   *(Or from root: `python amazon_developer_hackathon_aurastream/run.py`)*
 3. **Open Client in Browser / Simulator**:
    Navigate to: `http://127.0.0.1:8000/` (or open in Fire TV web runtime).
 4. **Kill-Switch / Emergency Reset**:

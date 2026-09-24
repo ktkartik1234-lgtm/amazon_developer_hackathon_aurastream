@@ -81,15 +81,17 @@ pip install fastapi uvicorn pydantic mcp boto3 botocore sse-starlette httpx pyte
 ```
 
 ### Step 2: Run Automated Test Suite
-Verify that all 17 unit, integration, and MCP tool tests pass:
+Verify that all 50 unit, integration, intent router, and regression tests pass:
 ```bash
 python -m pytest core/tests -v
 ```
 
 ### Step 3: Launch AuraStream Server & Fire TV Client
+Launch via the zero-friction runner:
 ```bash
-python -m uvicorn core.app.main:app --host 0.0.0.0 --port 8000 --reload
+python run.py
 ```
+*(Alternatively: `python -m uvicorn core.app.main:app --app-dir . --host 127.0.0.1 --port 8000 --reload`)*
 
 ### Step 4: Open Fire TV 10-Foot Experience
 Open your browser or Fire TV WebView simulator to:
