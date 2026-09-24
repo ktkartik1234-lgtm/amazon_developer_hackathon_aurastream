@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080, user-scalable=no">
+  <title>AuraStream | Living Room Intelligence for Fire TV</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="tv-app-root">
+    
+    <!-- Real Hardware-Accelerated Video Layer -->
+    <div id="video-stage">
+      <video id="hero-video" playsinline preload="auto" crossorigin="anonymous" muted autoplay loop poster="assets/tile04.jpg">
+        <source src="https://media.w3.org/2010/05/sintel/trailer.mp4" type="video/mp4">
+        <source src="https://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+      </video>
+      <!-- Hidden canvas for Amazon Bedrock real-time frame capture -->
+      <canvas id="hero-video-canvas" style="display: none;"></canvas>
+      <div id="video-vignette" class="video-vignette"></div>
+      <div id="xray-backdrop-dim" class="xray-dim-layer"></div>
+      
+      <!-- Video Play/Buffering Affordance -->
+      <div id="video-play-affordance" class="video-play-affordance" style="display: none;">
+        <div class="play-pulse-circle">▶</div>
+        <div class="play-affordance-text">Press <span class="remote-key">SELECT</span> to Play</div>
+      </div>
+    </div>
+
+    <!-- Top Navigation & Streaming Specs Bar -->
+    <header id="tv-header">
+      <div class="brand-badge">
+        <div class="brand-logo-wrap">
+          <span class="brand-logo">AuraStream</span>
+          <span class="xray-tag">X-RAY</span>
+        </div>
+        <div class="stream-title-meta">
+          <div id="stream-media-title" class="stream-main-title">Sintel: The Dragon's Ascent</div>
+          <div class="stream-badges-row">
+            <span id="stream-pill-badge" class="stream-pill">FEATURED FILM</span>
+            <span class="spec-badge">4K ULTRA HD</span>
+            <span class="spec-badge">HDR10+</span>
+            <span class="spec-badge">DOLBY ATMOS</span>
+            <span class="spec-badge imdb-badge">★ 8.9 IMDb</span>
+          </div>
+        </div>
+      </div>
+      <div class="ambient-status">
+        <div class="status-indicator">
+          <div class="pulse-dot"></div>
+          <span>Aura Live X-Ray</span>
+        </div>
+        <div class="status-indicator cloud-sync">
+          <span class="sync-icon">⚡</span>
+          <span>AWS Bedrock Multi-Modal</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Aura Pulse X-Ray Panel (Right Rail) -->
+    <aside id="aura-hud">
+      <div class="glass-panel hud-section">
+        <div class="hud-header-row">
+          <span class="hud-title">In This Scene</span>
+          <span class="hud-count-badge">3 Actors</span>
+        </div>
+        <div id="hud-entity-list" class="entity-list">
+          <div class="entity-row">
+            <img class="entity-avatar-img" src="assets/tile01.jpg" alt="Sintel">
+            <div class="entity-meta">
+              <div class="entity-name">Sintel</div>
+              <div class="entity-role">Lead Protagonist</div>
+              <div class="entity-sub">Halina Reijn • <span class="tag-verified">Verified Cast</span></div>
+            </div>
+          </div>
+          <div class="entity-row">
+            <img class="entity-avatar-img" src="assets/tile02.jpg" alt="Shaman">
+            <div class="entity-meta">
+              <div class="entity-name">The Shaman</div>
+              <div class="entity-role">Hermit Guide</div>
+              <div class="entity-sub">Thom Hoffman • <span class="tag-verified">Verified Cast</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-panel hud-section">
+        <div class="hud-header-row">
+          <span class="hud-title">Now Playing</span>
+          <span class="hud-spec-pill">Dolby Atmos</span>
+        </div>
+        <div class="music-card-content">
+          <div class="music-album-art">
+            <img src="assets/tile03.jpg" alt="Soundtrack Art">
+            <div class="music-eq-bars">
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+            </div>
+          </div>
+          <div class="music-meta">
+            <div id="hud-soundtrack" class="soundtrack-title">Jan Morgenstern - The Quest</div>
+            <div class="soundtrack-artist">Original Orchestral Score</div>
+            <div class="music-action-tag">Available on Amazon Music</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-panel hud-section">
+        <div class="hud-header-row">
+          <span class="hud-title">Trivia & Production</span>
+          <span class="hud-spec-pill imdb-pill">IMDb Trivia</span>
+        </div>
+        <div id="hud-trivia-fact" class="trivia-text">
+          Directed by Colin Levy and produced by the Blender Animation Studio. All rendering was completed using open-source procedural lighting pipelines.
+        </div>
+      </div>
+    </aside>
+
+    <!-- Detailed Insight Cards Carousel (Centered Interactive Overlay) -->
+    <div id="card-carousel" style="display: none; opacity: 0;"></div>
+
+    <!-- Amazon-Style Related Titles Shelf -->
+    <div id="media-shelf-container">
+      <div class="shelf-header">
+        <span class="shelf-title">More Like This (Amazon Prime Catalog)</span>
+      </div>
+      <div id="media-shelf" class="shelf-track">
+        <div class="shelf-tile" tabindex="0" data-stream="stream_sintel" data-title="Sintel: The Dragon's Ascent">
+          <img src="assets/tile04.jpg" alt="Movie 1">
+          <div class="tile-meta">
+            <div class="tile-title">Dragon's Ascent</div>
+            <div class="tile-sub">Sci-Fi • 4K UHD</div>
+          </div>
+        </div>
+        <div class="shelf-tile" tabindex="0" data-stream="stream_oceans" data-title="Deep Oceans: Abyssal Realms">
+          <img src="assets/tile05.jpg" alt="Movie 2">
+          <div class="tile-meta">
+            <div class="tile-title">Abyssal Realms</div>
+            <div class="tile-sub">Nature • HDR10+</div>
+          </div>
+        </div>
+        <div class="shelf-tile" tabindex="0" data-stream="stream_sailing" data-title="Costa Rica: Whale Tail Voyage">
+          <img src="assets/tile06.jpg" alt="Movie 3">
+          <div class="tile-meta">
+            <div class="tile-title">Whale Tail Voyage</div>
+            <div class="tile-sub">Travel • 2160p</div>
+          </div>
+        </div>
+        <div class="shelf-tile" tabindex="0" data-stream="stream_sports" data-title="Champions Cup: Madrid vs Manchester">
+          <img src="assets/tile07.jpg" alt="Movie 4">
+          <div class="tile-meta">
+            <div class="tile-title">Champions Cup</div>
+            <div class="tile-sub">Live Sports • 60fps</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Frosted Living Room Action Dock -->
+    <nav id="pill-strip">
+      <button class="tv-pill" data-action="who" tabindex="0">
+        <span class="pill-icon">🔍</span>
+        <span>Who's on Screen?</span>
+      </button>
+      <button class="tv-pill" data-action="tactics" tabindex="0">
+        <span class="pill-icon">⚽</span>
+        <span>Tactical Breakdown</span>
+      </button>
+      <button class="tv-pill" data-action="music" tabindex="0">
+        <span class="pill-icon">🎵</span>
+        <span>Soundtrack</span>
+      </button>
+      <button class="tv-pill" data-action="recap" tabindex="0">
+        <span class="pill-icon">📖</span>
+        <span>Catch Up (Spoiler-Free)</span>
+      </button>
+      <button class="tv-pill" data-action="ambient" tabindex="0">
+        <span class="pill-icon">🏠</span>
+        <span>Family Mode</span>
+      </button>
+      <button class="tv-pill" data-action="switch-stream" tabindex="0">
+        <span class="pill-icon">🔄</span>
+        <span>Switch Video</span>
+      </button>
+    </nav>
+
+    <!-- Video Playback Timeline & Remote Legend -->
+    <footer id="video-controls">
+      <div class="scrub-container">
+        <div id="scrub-buffered" class="scrub-buffered"></div>
+        <div id="scrub-progress" class="scrub-progress"></div>
+      </div>
+      <div class="control-bar">
+        <div class="time-and-status">
+          <span id="playback-state-icon" class="state-icon">▶</span>
+          <span id="time-display" class="time-display">0:00 / 0:52</span>
+          <span class="stream-codec-badge">H.264 • 1080p 60fps • 5.1ch</span>
+        </div>
+        <div class="remote-hint-strip">
+          <div><span class="remote-key">D-PAD</span> Browse</div>
+          <div><span class="remote-key">SELECT</span> Play / X-Ray</div>
+          <div><span class="remote-key">BACK</span> Dismiss</div>
+          <div><span class="remote-key">V</span> Alexa Voice Trigger</div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Glassmorphic Non-Blocking Ambient Toast Notification -->
+    <div id="aura-toast" class="aura-toast" style="display: none;">
+      <div class="toast-glow-dot"></div>
+      <div class="toast-content">
+        <div id="toast-title" class="toast-title">Aura Ambient Mode Active</div>
+        <div id="toast-message" class="toast-message">Dialogue Boost: +4.5dB • Subtitles Adaptive ON</div>
+      </div>
+    </div>
+
+    <!-- Alexa+ Voice Remote Modal (Focus-Trapped, TV D-Pad Friendly) -->
+    <div id="voice-remote-modal" class="voice-modal-backdrop" style="display: none;">
+      <div class="voice-modal-card">
+        <div class="voice-modal-header">
+          <div class="alexa-ring-animation"></div>
+          <div class="voice-header-text">
+            <div class="voice-modal-title">Alexa+ Voice Remote Simulation</div>
+            <div class="voice-modal-sub">Streamable HTTP MCP • Amazon Bedrock Multi-Modal</div>
+          </div>
+        </div>
+        <div class="voice-modal-prompt">Choose a voice query or enter custom command:</div>
+        <div id="voice-preset-list" class="voice-preset-list">
+          <button class="voice-preset-pill" tabindex="0" data-query="Who is on screen?">
+            <span class="preset-icon">🔍</span>
+            <span>Who is on screen?</span>
+          </button>
+          <button class="voice-preset-pill" tabindex="0" data-query="Explain this tactical play">
+            <span class="preset-icon">⚽</span>
+            <span>Explain this tactical play</span>
+          </button>
+          <button class="voice-preset-pill" tabindex="0" data-query="What soundtrack is playing?">
+            <span class="preset-icon">🎵</span>
+            <span>What soundtrack is playing?</span>
+          </button>
+          <button class="voice-preset-pill" tabindex="0" data-query="Catch me up (Spoiler-Free)">
+            <span class="preset-icon">📖</span>
+            <span>Catch me up (Spoiler-Free)</span>
+          </button>
+        </div>
+        <div class="voice-input-row">
+          <input type="text" id="voice-text-input" placeholder="Type custom voice instruction..." tabindex="0">
+          <button id="voice-submit-btn" class="voice-submit-btn" tabindex="0">Ask Aura</button>
+        </div>
+        <div class="voice-modal-footer">
+          <span>Press <span class="remote-key">BACK</span> to Dismiss • Press <span class="remote-key">SELECT</span> to Speak Query</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Client Application Scripts -->
+  <script src="js/streamData.js"></script>
+  <script src="js/spatialNav.js"></script>
+  <script src="js/videoPlayer.js"></script>
+  <script src="js/mcpClient.js"></script>
+  <script src="js/auraOverlay.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

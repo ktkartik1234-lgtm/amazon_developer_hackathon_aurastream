@@ -1,0 +1,321 @@
+/**
+ * Canonical Scene Database for AuraStream Client.
+ * Exported from core/app/data/scenes.json (Single Source of Truth).
+ */
+
+window.AuraSceneDatabase = {
+  "stream_sintel": {
+    "title": "Sintel: The Dragon's Ascent",
+    "genre": "Fantasy / Animation",
+    "timeline": [
+      {
+        "time_range": [
+          0.0,
+          25.0
+        ],
+        "actors": [
+          {
+            "name": "Sintel",
+            "character": "Lead Protagonist",
+            "bio_snippet": "A solitary warrior who rescues and bonds with a wounded baby dragon.",
+            "confidence": 0.99
+          },
+          {
+            "name": "Scales",
+            "character": "Dragon Whelp",
+            "bio_snippet": "A vulnerable baby dragon with vibrant green wings who imprints upon Sintel.",
+            "confidence": 0.97
+          }
+        ],
+        "objects": [
+          {
+            "label": "Spear of the Nomad",
+            "category": "Weapons / Gear"
+          },
+          {
+            "label": "Weathered Leather Cloak",
+            "category": "Apparel"
+          },
+          {
+            "label": "Ruins of Islegard",
+            "category": "Architecture"
+          }
+        ],
+        "soundtrack": "Jan Morgenstern - The Quest (Original Orchestral Score)",
+        "trivia_fact": "Directed by Colin Levy and produced by Blender Animation Studio. Rendered entirely on open-source pipelines.",
+        "plot_summary": "Sintel traverses unforgiving snowy peaks, nursing an injured baby dragon back to health before it is abducted by an adult dragon."
+      },
+      {
+        "time_range": [
+          25.1,
+          55.0
+        ],
+        "actors": [
+          {
+            "name": "Sintel",
+            "character": "Lead Protagonist",
+            "bio_snippet": "Determined tracker searching across barren lands to recover her abducted dragon.",
+            "confidence": 0.98
+          },
+          {
+            "name": "The Shaman",
+            "character": "Hermit Guide",
+            "bio_snippet": "An enigmatic elder dwelling in the arid wasteland who warns Sintel of the dragon's mountain.",
+            "confidence": 0.96
+          }
+        ],
+        "objects": [
+          {
+            "label": "Ancient Parchment Map",
+            "category": "Navigation / Cartography"
+          },
+          {
+            "label": "Staff of the Shaman",
+            "category": "Artifacts"
+          }
+        ],
+        "soundtrack": "Jan Morgenstern - Salt Tears (Dolby Atmos)",
+        "trivia_fact": "Character rigging for Sintel introduced advanced procedural facial deformation systems to Blender 2.5.",
+        "plot_summary": "Sintel confronts the ancient Shaman in the desert ruins, receiving foreboding omens regarding the perilous mountain ascent."
+      }
+    ]
+  },
+  "stream_oceans": {
+    "title": "Deep Oceans: Abyssal Realms",
+    "genre": "Nature / Marine Documentary",
+    "timeline": [
+      {
+        "time_range": [
+          0.0,
+          30.0
+        ],
+        "actors": [
+          {
+            "name": "Dr. Sylvia Earle",
+            "character": "Oceanographer & Deep Submersible Pilot",
+            "bio_snippet": "Legendary marine biologist leading deep-trench acoustic surveys.",
+            "confidence": 0.98
+          },
+          {
+            "name": "Blue Whale Pod",
+            "character": "Pelagic Megafauna",
+            "bio_snippet": "Migrating blue whales communicating via low-frequency infrasonic pulses.",
+            "confidence": 0.99
+          }
+        ],
+        "objects": [
+          {
+            "label": "Deep-Sea Submersible Alvin",
+            "category": "Vehicles / Research"
+          },
+          {
+            "label": "Multi-beam Sonar Hydrophone Array",
+            "category": "Acoustics"
+          }
+        ],
+        "soundtrack": "BBC Philharmonic - Symphony of the Pelagic Abyss",
+        "trivia_fact": "Filmed in 8K HDR at 4,000 meters depth using specialized pressure-sealed optical quartz domes.",
+        "plot_summary": "Submersible expedition documents infrasonic whale vocalizations and discovers pristine deep-water kelp sanctuaries."
+      },
+      {
+        "time_range": [
+          30.1,
+          60.0
+        ],
+        "actors": [
+          {
+            "name": "Bioluminescent Siphonophore",
+            "character": "Abyssal Colonial Organism",
+            "bio_snippet": "A 40-meter colonial cnidarian glowing with synchronized bioluminescent waves.",
+            "confidence": 0.97
+          }
+        ],
+        "objects": [
+          {
+            "label": "Laser Fluorescent Macro Scanner",
+            "category": "Optical Science"
+          },
+          {
+            "label": "Titanium CTD Water Sampler",
+            "category": "Oceanography"
+          }
+        ],
+        "soundtrack": "Brian Eno - Pelagic Drift (Ambient Spatial Audio)",
+        "trivia_fact": "Siphonophores in the Mariana Trench coordinate thousands of specialized zooids to hunt in absolute darkness.",
+        "plot_summary": "Descending into the aphotic midnight zone, exploring alien bioluminescent colonies and hydrothermal vents."
+      }
+    ]
+  },
+  "stream_sailing": {
+    "title": "Costa Rica: Whale Tail Voyage",
+    "genre": "Travel / Ocean Exploration",
+    "timeline": [
+      {
+        "time_range": [
+          0.0,
+          60.0
+        ],
+        "actors": [
+          {
+            "name": "Captain Mateo Cruz",
+            "character": "Expedition Navigator",
+            "bio_snippet": "Master mariner navigating the biodiverse coastal waters of the Osa Peninsula.",
+            "confidence": 0.97
+          },
+          {
+            "name": "Ana Torres",
+            "character": "Marine Ecologist",
+            "bio_snippet": "Researcher tracking humpback whale nursery grounds along the Pacific ridge.",
+            "confidence": 0.98
+          }
+        ],
+        "objects": [
+          {
+            "label": "Catamaran Oceanus",
+            "category": "Maritime / Sailing"
+          },
+          {
+            "label": "Solar Array Navigation Rig",
+            "category": "Clean Tech"
+          },
+          {
+            "label": "Photogrammetry Survey Drone",
+            "category": "Avionics"
+          }
+        ],
+        "soundtrack": "Coastal Horizons - Pacific Breezes (Acoustic 24-bit 96kHz)",
+        "trivia_fact": "Filmed around the Marino Ballena National Park, renowned for its naturally formed whale-tail sandbar.",
+        "plot_summary": "Sailing through crystalline Pacific shoals as humpback mothers nurse calves in protected tropical estuaries."
+      }
+    ]
+  },
+  "stream_sports": {
+    "title": "Global Champions Cup: Madrid vs Manchester",
+    "genre": "Live Sports / Football",
+    "timeline": [
+      {
+        "time_range": [
+          0.0,
+          90.0
+        ],
+        "actors": [
+          {
+            "name": "Mateo Silva",
+            "character": "Forward #9 (Madrid)",
+            "bio_snippet": "Tournament top goalscorer with 24 goals in 22 appearances.",
+            "confidence": 0.99
+          },
+          {
+            "name": "David Ray",
+            "character": "Goalkeeper #1 (Manchester)",
+            "bio_snippet": "Veteran keeper with 14 clean sheets in international tournament play.",
+            "confidence": 0.98
+          }
+        ],
+        "objects": [
+          {
+            "label": "Adidas Predator Match Ball",
+            "category": "Sports Equipment"
+          },
+          {
+            "label": "VAR Optical Tracking Array",
+            "category": "Broadcasting"
+          }
+        ],
+        "soundtrack": "Live Stadium Atmosphere - Santiago Bernab\u00e9u (96.4 dB)",
+        "trivia_fact": "Mateo Silva's sprint speed during this 84th-minute counter-attack reached 34.8 km/h.",
+        "sports_telemetry": {
+          "possession": "Madrid 58% - Manchester 42%",
+          "shots_on_target": "7 - 4",
+          "expected_goals_xg": 1.84,
+          "active_tactical_formation": "4-3-3 High Press"
+        },
+        "plot_summary": "High-stakes European final tied at 1-1, Madrid executing a rapid transition against Manchester's high line."
+      }
+    ]
+  },
+  "stream_aurora_voyager": {
+    "title": "Aurora: The Outer Rim Odyssey",
+    "genre": "Sci-Fi / Space Exploration",
+    "timeline": [
+      {
+        "time_range": [
+          0.0,
+          45.0
+        ],
+        "actors": [
+          {
+            "name": "Dr. Elena Vance",
+            "character": "Chief Astrobiologist",
+            "bio_snippet": "Lead scientist investigating biological biosignatures in the Titan methane seas.",
+            "confidence": 0.98
+          },
+          {
+            "name": "Commander Liam Hayes",
+            "character": "Mission Commander",
+            "bio_snippet": "Veteran test pilot of the United Earth Deep Space Reconnaissance Wing.",
+            "confidence": 0.96
+          }
+        ],
+        "objects": [
+          {
+            "label": "Cryo-Stasis Chamber",
+            "category": "Tech / Medical"
+          },
+          {
+            "label": "Quantum Gravimeter HUD",
+            "category": "Tech / Avionics"
+          }
+        ],
+        "soundtrack": "Hans Zimmer - Stellar Horizons (Dolby Atmos Spatial)",
+        "trivia_fact": "The orbital physics simulation shown on the cockpit HUD was mathematically calculated using actual JPL ephemeris data.",
+        "plot_summary": "The crew of the Voyager investigates anomalous electromagnetic signals emanating from the Europa ocean."
+      }
+    ]
+  },
+  "stream_champions_cup": {
+    "title": "Global Champions Cup: Madrid vs Manchester",
+    "genre": "Live Sports / Football",
+    "timeline": [
+      {
+        "time_range": [
+          0.0,
+          90.0
+        ],
+        "actors": [
+          {
+            "name": "Mateo Silva",
+            "character": "Forward #9",
+            "bio_snippet": "Top goalscorer this season with 24 goals in 22 appearances.",
+            "confidence": 0.99
+          },
+          {
+            "name": "David Ray",
+            "character": "Goalkeeper #1",
+            "bio_snippet": "Recorded 14 clean sheets in the tournament.",
+            "confidence": 0.98
+          }
+        ],
+        "objects": [
+          {
+            "label": "Match Ball (Adidas Predator Pro)",
+            "category": "Sports Gear"
+          },
+          {
+            "label": "VAR Optical Tracking Camera",
+            "category": "Broadcasting"
+          }
+        ],
+        "soundtrack": "Live Stadium Atmosphere - Santiago Bernab\u00e9u (96.4 dB)",
+        "trivia_fact": "Mateo Silva's sprint speed in this counter-attack reached 34.8 km/h.",
+        "sports_telemetry": {
+          "possession": "Madrid 58% - Manchester 42%",
+          "shots_on_target": "7 - 4",
+          "expected_goals_xg": 1.84,
+          "active_tactical_formation": "4-3-3 High Press"
+        },
+        "plot_summary": "High-stakes European final tied at 1-1, Madrid executing a rapid transition against Manchester's high line."
+      }
+    ]
+  }
+};
