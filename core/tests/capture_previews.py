@@ -1,6 +1,5 @@
 """
-Capture UI State Previews for Visual Audit.
-Saves temp HTML in client/ so all relative assets (css/, assets/) load properly.
+Capture UI State Previews for Visual Audit of Cinema-Grade Interface.
 """
 
 import os
@@ -17,113 +16,87 @@ INDEX_HTML = CLIENT_DIR / "index.html"
 with open(INDEX_HTML, "r", encoding="utf-8") as f:
     orig_html = f.read()
 
-# 1. Voice Remote Modal Preview
-modal_html = orig_html.replace(
-    'id="voice-remote-modal" class="voice-modal-backdrop" style="display: none;"',
-    'id="voice-remote-modal" class="voice-modal-backdrop" style="display: flex;"',
-)
-modal_file = CLIENT_DIR / "temp_modal.html"
-modal_file.write_text(modal_html, encoding="utf-8")
-
+# 1. Prime Video X-Ray Open (Cast Tab)
+file_xray = CLIENT_DIR / "temp_xray.html"
+file_xray.write_text(orig_html, encoding="utf-8")
 cmd1 = [
     CHROME,
     "--headless=new",
-    f"--screenshot={PREVIEWS_DIR / 'modal_preview.png'}",
+    f"--screenshot={PREVIEWS_DIR / 'cinema_xray_open.png'}",
     "--window-size=1920,1080",
-    f"file:///{modal_file.as_posix()}",
+    f"file:///{file_xray.as_posix()}",
 ]
 subprocess.run(cmd1, check=True)
-modal_file.unlink(missing_ok=True)
-print("Captured modal_preview.png")
+file_xray.unlink(missing_ok=True)
+print("Captured cinema_xray_open.png")
 
-# 2. X-Ray Cards Overlay Preview
-sample_cards = """
-<div id="card-carousel" style="display: flex; opacity: 1;">
-  <div class="insight-card focused" tabindex="0">
-    <div class="card-badge-row">
-      <span class="card-category-badge actor-badge">ACTOR PROFILE</span>
-      <span class="card-confidence-badge">99% CONFIDENCE</span>
-    </div>
-    <div class="card-headline">Halina Reijn as Sintel</div>
-    <div class="card-title">Lead Protagonist • Dragon Trainer</div>
-    <div class="card-desc">A solitary warrior whose life transforms after rescuing an injured dragon whelp named Scales. Voice portrayed by acclaimed Dutch actress Halina Reijn.</div>
-    <div class="card-actions-row">
-      <button class="card-action-btn primary" tabindex="0">View Filmography</button>
-      <button class="card-action-btn" tabindex="0">IMDb Bio</button>
-    </div>
-  </div>
-  <div class="insight-card" tabindex="0">
-    <div class="card-badge-row">
-      <span class="card-category-badge actor-badge">ACTOR PROFILE</span>
-      <span class="card-confidence-badge">96% CONFIDENCE</span>
-    </div>
-    <div class="card-headline">Thom Hoffman as The Shaman</div>
-    <div class="card-title">Hermit Guide • Mystic Oracle</div>
-    <div class="card-desc">An ancient hermit living in the desert ruins who interprets the dragon runes and warns Sintel of the guardian beast on the volcano peak.</div>
-    <div class="card-actions-row">
-      <button class="card-action-btn primary" tabindex="0">View Filmography</button>
-      <button class="card-action-btn" tabindex="0">IMDb Bio</button>
-    </div>
-  </div>
-</div>
-"""
-cards_html = orig_html.replace(
-    '<div id="card-carousel" style="display: none; opacity: 0;"></div>',
-    sample_cards,
+# 2. X-Ray Music Tab Open
+music_html = orig_html.replace(
+    'class="xray-tab active" data-tab="cast"',
+    'class="xray-tab" data-tab="cast"',
 ).replace(
-    '<div id="xray-backdrop-dim" class="xray-dim-layer"></div>',
-    '<div id="xray-backdrop-dim" class="xray-dim-layer active"></div>',
+    'class="xray-tab" data-tab="music"',
+    'class="xray-tab active" data-tab="music"',
+).replace(
+    'id="tray-cast" class="tray-pane active"',
+    'id="tray-cast" class="tray-pane" style="display: none;"',
+).replace(
+    'id="tray-music" class="tray-pane" style="display: none;"',
+    'id="tray-music" class="tray-pane active" style="display: block;"',
 )
-cards_file = CLIENT_DIR / "temp_cards.html"
-cards_file.write_text(cards_html, encoding="utf-8")
-
+file_music = CLIENT_DIR / "temp_music.html"
+file_music.write_text(music_html, encoding="utf-8")
 cmd2 = [
     CHROME,
     "--headless=new",
-    f"--screenshot={PREVIEWS_DIR / 'cards_preview.png'}",
+    f"--screenshot={PREVIEWS_DIR / 'cinema_music_tab.png'}",
     "--window-size=1920,1080",
-    f"file:///{cards_file.as_posix()}",
+    f"file:///{file_music.as_posix()}",
 ]
 subprocess.run(cmd2, check=True)
-cards_file.unlink(missing_ok=True)
-print("Captured cards_preview.png")
+file_music.unlink(missing_ok=True)
+print("Captured cinema_music_tab.png")
 
-# 3. Toast Notification Preview
-toast_html = orig_html.replace(
-    'id="aura-toast" class="aura-toast" style="display: none;"',
-    'id="aura-toast" class="aura-toast visible" style="display: flex;"',
+# 3. Authentic Alexa Bottom Light-Bar
+alexa_html = orig_html.replace(
+    'id="alexa-voice-bar" class="alexa-voice-bar" style="display: none;"',
+    'id="alexa-voice-bar" class="alexa-voice-bar" style="display: flex;"',
 )
-toast_file = CLIENT_DIR / "temp_toast.html"
-toast_file.write_text(toast_html, encoding="utf-8")
-
+file_alexa = CLIENT_DIR / "temp_alexa.html"
+file_alexa.write_text(alexa_html, encoding="utf-8")
 cmd3 = [
     CHROME,
     "--headless=new",
-    f"--screenshot={PREVIEWS_DIR / 'toast_preview.png'}",
+    f"--screenshot={PREVIEWS_DIR / 'cinema_alexa_bar.png'}",
     "--window-size=1920,1080",
-    f"file:///{toast_file.as_posix()}",
+    f"file:///{file_alexa.as_posix()}",
 ]
 subprocess.run(cmd3, check=True)
-toast_file.unlink(missing_ok=True)
-print("Captured toast_preview.png")
+file_alexa.unlink(missing_ok=True)
+print("Captured cinema_alexa_bar.png")
 
-# 4. Subtitle Track Preview
-sub_html = orig_html.replace(
+# 4. Pure Cinema Video (HUD Hidden)
+pure_html = orig_html.replace(
+    'id="tv-header" class="tv-hud-layer visible"',
+    'id="tv-header" class="tv-hud-layer hidden"',
+).replace(
+    'id="xray-drawer" class="tv-hud-layer visible"',
+    'id="xray-drawer" class="tv-hud-layer hidden"',
+).replace(
     '<div id="vtt-subtitle-display" class="vtt-subtitle-display" style="display: none;"></div>',
     '<div id="vtt-subtitle-display" class="vtt-subtitle-display" style="display: block;">[Sintel] Scales... wake up, little one. The snow is clearing over the mountain pass.</div>',
 )
-sub_file = CLIENT_DIR / "temp_sub.html"
-sub_file.write_text(sub_html, encoding="utf-8")
+file_pure = CLIENT_DIR / "temp_pure.html"
+file_pure.write_text(pure_html, encoding="utf-8")
 cmd4 = [
     CHROME,
     "--headless=new",
-    f"--screenshot={PREVIEWS_DIR / 'subtitle_preview.png'}",
+    f"--screenshot={PREVIEWS_DIR / 'cinema_pure_video.png'}",
     "--window-size=1920,1080",
-    f"file:///{sub_file.as_posix()}",
+    f"file:///{file_pure.as_posix()}",
 ]
 subprocess.run(cmd4, check=True)
-sub_file.unlink(missing_ok=True)
-print("Captured subtitle_preview.png")
+file_pure.unlink(missing_ok=True)
+print("Captured cinema_pure_video.png")
 
-print("All previews captured successfully!")
-
+print("All cinema previews captured successfully!")

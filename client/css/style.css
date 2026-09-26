@@ -1,53 +1,58 @@
 /* ==========================================================================
-   AuraStream: Commercial-Grade Fire TV & Prime Video X-Ray Stylesheet
-   Designed for 1080p (1920x1080) & 4K viewports at 10-foot viewing distances.
+   AuraStream: Cinema-Grade Amazon Fire TV & Prime Video X-Ray Interface
+   Platform: Fire TV / Vega OS (10-Foot Living Room UI)
    ========================================================================== */
 
 :root {
-  --bg-deep: #050811;
-  --bg-surface: rgba(13, 20, 36, 0.88);
   --amazon-cyan: #00A8E1;
   --amazon-cyan-glow: rgba(0, 168, 225, 0.45);
-  --amazon-amber: #FF9900;
-  --amazon-amber-glow: rgba(255, 153, 0, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-specular: rgba(255, 255, 255, 0.08);
-  --text-primary: #FFFFFF;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --font-tv: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --amazon-cyan-bright: #00D6FF;
+  --amazon-gold: #F5C518;
+  --amazon-gold-glow: rgba(245, 197, 24, 0.4);
+  --bg-deep: #050811;
+  --bg-surface: rgba(15, 23, 42, 0.85);
+  --bg-scrim: rgba(5, 8, 17, 0.94);
+  --text-main: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.45);
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --border-focus: #FFFFFF;
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  user-select: none;
-  -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
 }
 
-html, body {
-  width: 100vw;
-  height: 100vh;
+body, html {
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background-color: var(--bg-deep);
-  color: var(--text-primary);
-  font-family: var(--font-tv);
-  font-size: 20px;
-}
-
-#tv-app-root {
-  position: relative;
-  width: 1920px;
-  height: 1080px;
-  transform-origin: top left;
-  overflow: hidden;
-  background: #000000;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Amazon Ember", "Segoe UI", Roboto, sans-serif;
+  color: var(--text-main);
+  user-select: none;
 }
 
 /* ==========================================================================
-   Hardware-Accelerated Video Layer
+   10-Foot Viewport Wrapper (1920x1080 Anchor with Dynamic Scaling)
+   ========================================================================== */
+#tv-app-root {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  transform-origin: top left;
+}
+
+/* ==========================================================================
+   1. 100% Full-Bleed Cinema Video Stage
    ========================================================================== */
 #video-stage {
   position: absolute;
@@ -56,21 +61,14 @@ html, body {
   width: 100%;
   height: 100%;
   z-index: 1;
+  background-color: #000000;
 }
 
 #hero-video {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: filter 0.4s var(--ease-spring), transform 0.4s var(--ease-spring);
-}
-
-#hero-video.xray-active {
-  filter: brightness(0.35) contrast(1.1) blur(2px);
-  transform: scale(0.98);
+  display: block;
 }
 
 .video-vignette {
@@ -80,73 +78,121 @@ html, body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(5, 8, 17, 0.75) 100%),
-              linear-gradient(to top, rgba(5, 8, 17, 0.95) 0%, rgba(5, 8, 17, 0) 30%),
-              linear-gradient(to bottom, rgba(5, 8, 17, 0.9) 0%, rgba(5, 8, 17, 0) 20%);
+  background: radial-gradient(circle at center, transparent 65%, rgba(0, 0, 0, 0.55) 100%);
   z-index: 2;
 }
 
-.xray-dim-layer {
+.video-dim-scrim {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(5, 8, 17, 0.6);
-  backdrop-filter: blur(12px);
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 0.35s ease;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.4s ease;
   z-index: 3;
 }
 
-.xray-dim-layer.active {
+.video-dim-scrim.active {
   opacity: 1;
-  pointer-events: auto;
+}
+
+/* Autoplay Recovery / Buffer Affordance */
+.video-play-affordance {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 8, 17, 0.8);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+}
+
+.play-pulse-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--amazon-cyan), #0077A3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 35px var(--amazon-cyan-glow);
+  animation: pulsePlay 2s infinite ease-in-out;
+  margin-bottom: 20px;
+}
+
+@keyframes pulsePlay {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--amazon-cyan-glow); }
+  50% { transform: scale(1.08); box-shadow: 0 0 50px rgba(0, 214, 255, 0.7); }
+}
+
+.play-affordance-text {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 /* ==========================================================================
-   Header Bar (Prime Video Style)
+   2. Top Cinema Metadata Bar (Auto-hiding)
    ========================================================================== */
 #tv-header {
   position: absolute;
-  top: 40px;
-  left: 64px;
-  right: 64px;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 130px;
+  padding: 36px 64px 0 64px;
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  z-index: 10;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, rgba(5, 8, 17, 0.95) 0%, rgba(5, 8, 17, 0.6) 65%, transparent 100%);
+  z-index: 50;
+  transition: transform 0.4s var(--ease-spring), opacity 0.4s var(--ease-smooth);
 }
 
-.brand-badge {
+#tv-header.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.header-left {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.brand-badge-wrap {
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-.brand-logo-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-logo {
-  font-size: 34px;
-  font-weight: 800;
+.brand-text {
+  font-size: 28px;
+  font-weight: 900;
   letter-spacing: -0.5px;
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #FFFFFF 60%, var(--amazon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.xray-tag {
+.xray-badge {
+  background: var(--amazon-gold);
+  color: #000000;
   font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  padding: 3px 10px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, var(--amazon-amber), #E67A00);
-  color: #070B14;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.8px;
 }
 
 .stream-title-meta {
@@ -155,300 +201,514 @@ html, body {
   gap: 6px;
 }
 
-.stream-main-title {
+.stream-title {
   font-size: 26px;
-  font-weight: 700;
-  color: #F8FAFC;
+  font-weight: 800;
+  color: #FFFFFF;
   letter-spacing: -0.3px;
 }
 
-.stream-badges-row {
+.stream-tags-row {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.stream-pill {
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 4px 12px;
-  border-radius: 12px;
-  background: rgba(0, 168, 225, 0.2);
-  border: 1px solid var(--amazon-cyan);
-  color: var(--amazon-cyan);
-}
-
-.spec-badge {
+.tag-badge {
   font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #E2E8F0;
-}
-
-.imdb-badge {
-  background: rgba(245, 197, 24, 0.18);
-  border-color: #F5C518;
-  color: #F5C518;
-}
-
-.ambient-status {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 15px;
-  font-weight: 600;
   color: var(--text-secondary);
-}
-
-.pulse-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: #10B981;
-  box-shadow: 0 0 12px #10B981;
-  animation: pulse-glow 2s infinite;
-}
-
-.cloud-sync {
-  color: var(--amazon-cyan);
-}
-
-.sync-icon {
-  font-size: 18px;
-}
-
-@keyframes pulse-glow {
-  0% { transform: scale(0.9); opacity: 0.8; }
-  50% { transform: scale(1.25); opacity: 1; }
-  100% { transform: scale(0.9); opacity: 0.8; }
-}
-
-/* ==========================================================================
-   Aura Pulse X-Ray Panel (Right Rail)
-   ========================================================================== */
-#aura-hud {
-  position: absolute;
-  top: 130px;
-  right: 64px;
-  width: 440px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  z-index: 15;
-  transition: transform 0.35s var(--ease-spring), opacity 0.35s ease;
-}
-
-.glass-panel {
-  background: var(--bg-surface);
-  backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid var(--glass-border);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
-}
-
-.hud-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.hud-title {
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--amazon-cyan);
-}
-
-.hud-count-badge {
-  font-size: 12px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: rgba(0, 168, 225, 0.15);
-  color: var(--amazon-cyan);
-}
-
-.hud-spec-pill {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 6px;
   background: rgba(255, 255, 255, 0.1);
-  color: var(--text-secondary);
+  padding: 3px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
 }
 
-.imdb-pill {
+.tag-badge.primary {
+  background: rgba(0, 168, 225, 0.2);
+  color: var(--amazon-cyan-bright);
+  border: 1px solid rgba(0, 168, 225, 0.4);
+}
+
+.tag-badge.imdb {
+  color: var(--amazon-gold);
   background: rgba(245, 197, 24, 0.15);
-  color: #F5C518;
+  font-weight: 800;
 }
 
-/* Cast Entity Rows with Real Headshots */
-.entity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.entity-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-}
-
-.entity-avatar-img {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  object-fit: cover;
-  border: 2px solid rgba(0, 168, 225, 0.4);
-}
-
-.entity-meta .entity-name {
-  font-size: 17px;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-.entity-meta .entity-role {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--amazon-cyan);
-}
-
-.entity-meta .entity-sub {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.tag-verified {
-  color: #10B981;
-  font-weight: 600;
-}
-
-/* Music Card Content */
-.music-card-content {
+.header-right {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.music-album-art {
+.ambient-pill, .bedrock-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.pulse-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 10px #10B981;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.bedrock-pill svg {
+  color: #FF9900;
+}
+
+/* ==========================================================================
+   3. Prime Video X-Ray Bottom Drawer & Control Bar (Auto-hiding)
+   ========================================================================== */
+#xray-drawer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(5, 8, 17, 0.98) 0%, rgba(8, 14, 28, 0.92) 80%, rgba(8, 14, 28, 0.6) 95%, transparent 100%);
+  backdrop-filter: blur(24px);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.45s var(--ease-spring), opacity 0.45s var(--ease-smooth);
+}
+
+#xray-drawer.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* X-Ray Horizontal Tabs (Clean Amazon Ember style, Zero emojis) */
+.xray-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 64px 16px 64px;
+}
+
+.xray-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid transparent;
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.xray-tab .tab-svg {
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.xray-tab.active {
+  background: rgba(0, 168, 225, 0.15);
+  border-color: var(--amazon-cyan);
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.xray-tab.active .tab-svg {
+  opacity: 1;
+  color: var(--amazon-cyan-bright);
+}
+
+.xray-tab:focus, .xray-tab.focused {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #FFFFFF;
+  color: #FFFFFF;
+  transform: scale(1.06);
+  box-shadow: 0 0 20px var(--amazon-cyan-glow);
+}
+
+/* Dynamic X-Ray Content Tray */
+.xray-tray-content {
+  padding: 8px 64px 20px 64px;
+  min-height: 200px;
+}
+
+.tray-pane {
+  display: none;
+  animation: fadeIn 0.25s var(--ease-smooth);
+}
+
+.tray-pane.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* In Scene: Actor Cards with Real Portraits */
+.cast-row {
+  display: flex;
+  gap: 20px;
+}
+
+.cast-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid var(--border-subtle);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-spring);
+  min-width: 320px;
+}
+
+.cast-card:focus, .cast-card.focused {
+  border-color: var(--amazon-cyan-bright);
+  background: rgba(0, 168, 225, 0.12);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 30px var(--amazon-cyan-glow);
+}
+
+.cast-portrait-wrap {
   position: relative;
-  width: 68px;
-  height: 68px;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--glass-border);
+  width: 76px;
+  height: 76px;
   flex-shrink: 0;
 }
 
-.music-album-art img {
+.cast-portrait {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid rgba(0, 168, 225, 0.5);
+}
+
+.verified-glyph {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #10B981;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #000000;
+}
+
+.cast-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.character-name {
+  font-size: 19px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.actor-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.role-tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amazon-cyan);
+}
+
+.confidence-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #10B981;
+}
+
+/* Music Pane */
+.music-tray-card {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 16px 28px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid var(--border-subtle);
+  outline: none;
+  max-width: 780px;
+}
+
+.music-tray-card:focus, .music-tray-card.focused {
+  border-color: var(--amazon-cyan-bright);
+  box-shadow: 0 12px 30px var(--amazon-cyan-glow);
+  transform: translateY(-4px) scale(1.02);
+}
+
+.music-art-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.music-art-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.music-eq-bars {
+.music-eq-waves {
   position: absolute;
-  bottom: 6px;
-  right: 6px;
+  bottom: 8px;
+  left: 8px;
   display: flex;
-  gap: 3px;
   align-items: flex-end;
-  height: 18px;
-  padding: 3px 5px;
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 4px;
+  gap: 3px;
+  height: 20px;
 }
 
-.eq-bar {
-  width: 3px;
-  background: var(--amazon-cyan);
+.music-eq-waves span {
+  width: 4px;
+  background: var(--amazon-cyan-bright);
   border-radius: 2px;
-  animation: eq-bounce 0.8s ease-in-out infinite alternate;
+  animation: eqBounce 1.2s infinite ease-in-out;
 }
 
-.eq-bar:nth-child(1) { height: 60%; animation-duration: 0.7s; }
-.eq-bar:nth-child(2) { height: 90%; animation-duration: 0.5s; }
-.eq-bar:nth-child(3) { height: 40%; animation-duration: 0.9s; }
-.eq-bar:nth-child(4) { height: 80%; animation-duration: 0.6s; }
+.music-eq-waves span:nth-child(1) { height: 60%; animation-delay: 0.1s; }
+.music-eq-waves span:nth-child(2) { height: 100%; animation-delay: 0.3s; }
+.music-eq-waves span:nth-child(3) { height: 40%; animation-delay: 0.2s; }
+.music-eq-waves span:nth-child(4) { height: 80%; animation-delay: 0.4s; }
 
-@keyframes eq-bounce {
-  0% { transform: scaleY(0.3); }
-  100% { transform: scaleY(1.0); }
+@keyframes eqBounce {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
 }
 
-.music-meta .soundtrack-title {
-  font-size: 16px;
-  font-weight: 700;
+.music-info-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.track-title {
+  font-size: 22px;
+  font-weight: 800;
   color: #FFFFFF;
 }
 
-.music-meta .soundtrack-artist {
+.track-sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.audio-badges-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.audio-spec-pill {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amazon-cyan-bright);
+  background: rgba(0, 168, 225, 0.15);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.amazon-music-pill {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amazon-gold);
+  background: rgba(245, 197, 24, 0.15);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+/* Trivia Pane */
+.trivia-tray-card {
+  padding: 22px 32px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid var(--border-subtle);
+  outline: none;
+  max-width: 860px;
+}
+
+.trivia-tray-card:focus, .trivia-tray-card.focused {
+  border-color: var(--amazon-gold);
+  box-shadow: 0 12px 30px var(--amazon-gold-glow);
+  transform: translateY(-4px) scale(1.02);
+}
+
+.trivia-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.imdb-pill-solid {
+  background: var(--amazon-gold);
+  color: #000000;
+  font-weight: 900;
   font-size: 13px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.trivia-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.trivia-body {
+  font-size: 18px;
+  line-height: 1.5;
+  color: #FFFFFF;
+}
+
+/* Tactical AI Pane */
+.tactics-tray-card {
+  padding: 20px 28px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid var(--border-subtle);
+  outline: none;
+  max-width: 860px;
+}
+
+.tactics-tray-card:focus, .tactics-tray-card.focused {
+  border-color: var(--amazon-cyan-bright);
+  box-shadow: 0 12px 30px var(--amazon-cyan-glow);
+  transform: translateY(-4px) scale(1.02);
+}
+
+.tactics-header-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.tactics-badge {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.6px;
+}
+
+.tactics-formation-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.tactics-stats-grid {
+  display: flex;
+  gap: 20px;
+}
+
+.tstat-box {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px 20px;
+  border-radius: 10px;
+  min-width: 140px;
+}
+
+.tstat-num {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--amazon-cyan-bright);
+}
+
+.tstat-lbl {
+  font-size: 12px;
   color: var(--text-secondary);
   margin-top: 2px;
 }
 
-.music-action-tag {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--amazon-amber);
-  margin-top: 4px;
+/* Recap Pane */
+.recap-tray-card {
+  padding: 22px 32px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid var(--border-subtle);
+  outline: none;
+  max-width: 860px;
 }
 
-.trivia-text {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #CBD5E1;
+.recap-tray-card:focus, .recap-tray-card.focused {
+  border-color: var(--amazon-cyan-bright);
+  box-shadow: 0 12px 30px var(--amazon-cyan-glow);
+  transform: translateY(-4px) scale(1.02);
 }
 
-/* ==========================================================================
-   Amazon-Style Related Titles Shelf
-   ========================================================================== */
-#media-shelf-container {
-  position: absolute;
-  bottom: 230px;
-  left: 64px;
-  right: 540px;
-  z-index: 12;
-}
-
-.shelf-header {
+.recap-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   margin-bottom: 12px;
 }
 
-.shelf-title {
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-secondary);
+.recap-pill {
+  background: rgba(0, 168, 225, 0.2);
+  color: var(--amazon-cyan-bright);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 168, 225, 0.4);
 }
 
+.recap-sync-time {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.recap-body {
+  font-size: 18px;
+  line-height: 1.5;
+  color: #FFFFFF;
+}
+
+/* More Like This (Catalog Shelf) */
 .shelf-track {
   display: flex;
   gap: 20px;
@@ -456,15 +716,28 @@ html, body {
 
 .shelf-tile {
   position: relative;
-  width: 220px;
-  height: 130px;
+  width: 260px;
+  height: 150px;
   border-radius: 14px;
   overflow: hidden;
-  border: 2px solid var(--glass-border);
+  border: 2px solid var(--border-subtle);
   background: #111827;
   cursor: pointer;
   outline: none;
   transition: all 0.25s var(--ease-spring);
+}
+
+.shelf-tile::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(5, 8, 17, 0.98) 0%, rgba(5, 8, 17, 0.8) 45%, rgba(5, 8, 17, 0) 100%);
+  border-radius: 0 0 12px 12px;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .shelf-tile img {
@@ -479,168 +752,44 @@ html, body {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 8px 12px;
-  background: linear-gradient(to top, rgba(5, 8, 17, 0.95), transparent);
+  z-index: 2;
+  padding: 10px 14px;
 }
 
 .shelf-tile .tile-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-.shelf-tile .tile-sub {
-  font-size: 11px;
-  color: var(--amazon-cyan);
-}
-
-/* Spatial Focus State for Shelf Tiles */
-.shelf-tile.focused, .shelf-tile:focus {
-  border-color: var(--amazon-cyan);
-  transform: scale(1.08) translateY(-6px);
-  box-shadow: 0 16px 36px var(--amazon-cyan-glow);
-}
-
-.shelf-tile.focused img, .shelf-tile:focus img {
-  transform: scale(1.05);
-}
-
-/* ==========================================================================
-   Floating Action Dock (Pill Strip)
-   ========================================================================== */
-#pill-strip {
-  position: absolute;
-  bottom: 130px;
-  left: 64px;
-  display: flex;
-  gap: 14px;
-  z-index: 20;
-}
-
-.tv-pill {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 22px;
-  background: var(--bg-surface);
-  backdrop-filter: blur(20px);
-  border: 2px solid var(--glass-border);
-  border-radius: 32px;
-  color: var(--text-primary);
   font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.25s var(--ease-spring);
-}
-
-.pill-icon {
-  font-size: 18px;
-}
-
-/* Spatial Focus for TV Remote */
-.tv-pill.focused, .tv-pill:focus {
-  background: rgba(0, 168, 225, 0.25);
-  border-color: var(--amazon-cyan);
-  transform: scale(1.08) translateY(-4px);
-  box-shadow: 0 12px 28px var(--amazon-cyan-glow);
-  color: #FFFFFF;
-}
-
-.tv-pill.active {
-  background: var(--amazon-cyan);
-  color: #050811;
-}
-
-/* ==========================================================================
-   Detailed Insight Cards (X-Ray Centerpiece)
-   ========================================================================== */
-#card-carousel {
-  position: absolute;
-  top: 240px;
-  left: 64px;
-  right: 540px;
-  display: flex;
-  gap: 24px;
-  z-index: 25;
-  transition: all 0.3s var(--ease-spring);
-}
-
-.insight-card {
-  flex: 1;
-  background: rgba(13, 20, 36, 0.96);
-  backdrop-filter: blur(28px);
-  border: 2px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 26px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  outline: none;
-  transition: all 0.25s var(--ease-spring);
-}
-
-.insight-card.focused, .insight-card:focus {
-  border-color: var(--amazon-amber);
-  transform: scale(1.05) translateY(-6px);
-  box-shadow: 0 20px 48px var(--amazon-amber-glow);
-}
-
-.card-badge-row {
-  display: flex;
-  gap: 8px;
-}
-
-.card-badge {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 8px;
-  background: rgba(255, 153, 0, 0.15);
-  border: 1px solid var(--amazon-amber);
-  color: var(--amazon-amber);
-}
-
-.card-title {
-  font-size: 24px;
   font-weight: 800;
   color: #FFFFFF;
 }
 
-.card-headline {
-  font-size: 15px;
+.shelf-tile .tile-sub {
+  font-size: 12px;
   font-weight: 600;
-  color: var(--amazon-cyan);
+  color: var(--amazon-cyan-bright);
 }
 
-.card-description {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--text-secondary);
+.shelf-tile:focus, .shelf-tile.focused {
+  border-color: #FFFFFF;
+  transform: scale(1.08) translateY(-6px);
+  box-shadow: 0 16px 36px var(--amazon-cyan-glow);
 }
 
-/* ==========================================================================
-   Video Playback Timeline & Remote Controls
-   ========================================================================== */
+.shelf-tile:focus img, .shelf-tile.focused img {
+  transform: scale(1.05);
+}
+
+/* Video Controls & Timeline Bar */
 #video-controls {
-  position: absolute;
-  bottom: 36px;
-  left: 64px;
-  right: 64px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 20;
+  padding: 10px 64px 28px 64px;
 }
 
 .scrub-container {
   position: relative;
   width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
-  overflow: hidden;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  margin-bottom: 14px;
 }
 
 .scrub-buffered {
@@ -648,9 +797,10 @@ html, body {
   top: 0;
   left: 0;
   height: 100%;
-  width: 60%;
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 3px;
+  width: 65%;
+  transition: width 0.3s ease;
 }
 
 .scrub-progress {
@@ -658,16 +808,17 @@ html, body {
   top: 0;
   left: 0;
   height: 100%;
-  width: 15%;
-  background: linear-gradient(90deg, var(--amazon-cyan), #38BDF8);
-  border-radius: 4px;
-  transition: width 0.1s linear;
+  background: var(--amazon-cyan);
+  border-radius: 3px;
+  width: 27%;
+  box-shadow: 0 0 12px var(--amazon-cyan-glow);
+  transition: width 0.2s linear;
 }
 
 .control-bar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .time-and-status {
@@ -677,323 +828,253 @@ html, body {
 }
 
 .state-icon {
-  font-size: 16px;
-  color: var(--amazon-cyan);
+  font-size: 14px;
+  color: #FFFFFF;
 }
 
 .time-display {
   font-size: 15px;
   font-weight: 700;
-  color: var(--text-secondary);
-  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
 }
 
 .stream-codec-badge {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
-  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 3px 8px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
 }
 
 .remote-hint-strip {
   display: flex;
   align-items: center;
-  gap: 20px;
-  font-size: 14px;
-  color: var(--text-muted);
-}
-
-.remote-key {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 5px;
-  color: #FFFFFF;
-  font-weight: 700;
-  font-size: 12px;
-  margin-right: 6px;
-}
-
-/* ==========================================================================
-   Shelf Tile Scrim (Resolves Graphic Text Collision BUG-11)
-   ========================================================================== */
-.shelf-tile {
-  position: relative;
-  overflow: hidden;
-}
-
-.shelf-tile::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 55%;
-  background: linear-gradient(to top, rgba(5, 8, 17, 0.98) 0%, rgba(5, 8, 17, 0.8) 45%, rgba(5, 8, 17, 0) 100%);
-  border-radius: 0 0 10px 10px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.shelf-tile .tile-meta {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  padding: 8px 12px;
-}
-
-/* ==========================================================================
-   High-Contrast TV Focus Ring for Insight Cards (BUG-12)
-   ========================================================================== */
-.insight-card:focus,
-.insight-card.focused {
-  outline: none;
-  border-color: var(--amazon-cyan) !important;
-  box-shadow: 0 0 28px var(--amazon-cyan-glow), inset 0 0 14px rgba(0, 168, 225, 0.25) !important;
-  transform: translateY(-6px) scale(1.04);
-}
-
-/* ==========================================================================
-   Video Play / Autoplay Recovery Affordance (BUG-08)
-   ========================================================================== */
-.video-play-affordance {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 16px;
-  z-index: 8;
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-.play-pulse-circle {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--amazon-cyan), #0077A3);
-  box-shadow: 0 0 35px var(--amazon-cyan-glow);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  color: #FFFFFF;
-  transition: transform 0.25s var(--ease-spring);
-}
-
-.play-affordance-text {
-  font-size: 18px;
-  font-weight: 700;
-  color: #FFFFFF;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-}
-
-/* ==========================================================================
-   Glassmorphic Ambient Toast Notification (BUG-06)
-   ========================================================================== */
-.aura-toast {
-  position: absolute;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  background: rgba(13, 20, 36, 0.94);
-  border: 1px solid var(--amazon-amber);
-  box-shadow: 0 10px 36px var(--amazon-amber-glow);
-  backdrop-filter: blur(16px);
-  border-radius: 12px;
-  padding: 14px 28px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  z-index: 9999;
-  opacity: 0;
-  transition: opacity 0.35s ease, transform 0.35s var(--ease-spring);
-  pointer-events: none;
-}
-
-.aura-toast.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-.toast-glow-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--amazon-amber);
-  box-shadow: 0 0 14px var(--amazon-amber);
-  animation: pulse-ring 1.8s infinite;
-}
-
-.toast-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: #FFFFFF;
-  margin-bottom: 2px;
-}
-
-.toast-message {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-secondary);
 }
 
-/* ==========================================================================
-   Alexa+ Voice Remote Simulation Modal (BUG-07)
-   ========================================================================== */
-.voice-modal-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(5, 8, 17, 0.78);
-  backdrop-filter: blur(16px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9998;
-}
-
-.voice-modal-card {
-  width: 760px;
-  background: rgba(13, 20, 36, 0.96);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 168, 225, 0.15);
-  border-radius: 20px;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.voice-modal-header {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.alexa-ring-animation {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 3px solid var(--amazon-cyan);
-  box-shadow: 0 0 24px var(--amazon-cyan-glow);
-  position: relative;
-}
-
-.voice-modal-title {
-  font-size: 24px;
+.key-badge, .remote-key {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
   font-weight: 800;
   color: #FFFFFF;
+  margin-right: 4px;
 }
 
-.voice-modal-sub {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--amazon-cyan);
+/* ==========================================================================
+   4. Authentic Alexa Living Room Ambient Bottom Light-Bar
+   ========================================================================== */
+.alexa-voice-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 110px;
+  background: linear-gradient(to top, rgba(2, 6, 15, 0.98) 0%, rgba(3, 10, 24, 0.9) 85%, transparent 100%);
+  backdrop-filter: blur(20px);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  animation: slideUpAlexa 0.35s var(--ease-spring);
+}
+
+@keyframes slideUpAlexa {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.alexa-glow-line {
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent 5%, #00D6FF 30%, #0077A3 70%, transparent 95%);
+  box-shadow: 0 0 24px #00D6FF, 0 0 8px #00A8E1;
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; filter: drop-shadow(0 0 12px #00D6FF); }
+}
+
+.alexa-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 64px;
+  height: 100%;
+}
+
+.alexa-wave-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.alexa-cyan-ring {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 3.5px solid #00D6FF;
+  box-shadow: 0 0 20px rgba(0, 214, 255, 0.8), inset 0 0 10px rgba(0, 214, 255, 0.4);
+  animation: ringPulse 1.6s infinite ease-in-out;
+}
+
+@keyframes ringPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); box-shadow: 0 0 28px #00D6FF; }
+}
+
+.alexa-wave-bars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+}
+
+.wbar {
+  width: 4px;
+  background: #00D6FF;
+  border-radius: 2px;
+  animation: wavePulse 1s infinite ease-in-out;
+}
+
+.wbar:nth-child(1) { height: 10px; animation-delay: 0.1s; }
+.wbar:nth-child(2) { height: 22px; animation-delay: 0.3s; }
+.wbar:nth-child(3) { height: 16px; animation-delay: 0.2s; }
+.wbar:nth-child(4) { height: 24px; animation-delay: 0.4s; }
+.wbar:nth-child(5) { height: 12px; animation-delay: 0.15s; }
+
+@keyframes wavePulse {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+
+.alexa-prompt-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.alexa-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #00D6FF;
   letter-spacing: 0.5px;
 }
 
-.voice-modal-prompt {
-  font-size: 16px;
-  color: var(--text-secondary);
-}
-
-.voice-preset-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.voice-preset-pill {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+.alexa-transcript {
+  font-size: 19px;
+  font-weight: 700;
   color: #FFFFFF;
-  font-size: 15px;
+}
+
+.alexa-chips-row {
+  display: flex;
+  gap: 10px;
+}
+
+.alexa-chip {
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid transparent;
+  color: #FFFFFF;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-}
-
-.voice-preset-pill:focus,
-.voice-preset-pill.focused {
   outline: none;
-  border-color: var(--amazon-cyan);
-  background: rgba(0, 168, 225, 0.18);
-  box-shadow: 0 0 20px var(--amazon-cyan-glow);
-  transform: scale(1.02);
+  transition: all 0.2s var(--ease-smooth);
 }
 
-.voice-input-row {
-  display: flex;
-  gap: 12px;
-}
-
-#voice-text-input {
-  flex: 1;
-  background: rgba(5, 8, 17, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 14px 18px;
-  color: #FFFFFF;
-  font-size: 16px;
-  outline: none;
-}
-
-#voice-text-input:focus {
-  border-color: var(--amazon-cyan);
-  box-shadow: 0 0 16px var(--amazon-cyan-glow);
-}
-
-.voice-submit-btn {
-  padding: 14px 24px;
-  background: linear-gradient(135deg, var(--amazon-cyan), #0077A3);
-  border: none;
-  border-radius: 10px;
-  color: #FFFFFF;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.voice-submit-btn:focus {
-  outline: none;
-  box-shadow: 0 0 20px var(--amazon-cyan-glow);
-}
-
-.voice-modal-footer {
-  font-size: 13px;
-  color: var(--text-muted);
-  text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 16px;
+.alexa-chip:focus, .alexa-chip.focused {
+  background: rgba(0, 214, 255, 0.25);
+  border-color: #00D6FF;
+  box-shadow: 0 0 18px rgba(0, 214, 255, 0.6);
+  transform: scale(1.05);
 }
 
 /* ==========================================================================
-   Synchronized High-Contrast TV Subtitle Track (BUG-14)
+   5. Floating Alexa Response Card (Bedrock Vision Output)
+   ========================================================================== */
+.alexa-response-card {
+  position: absolute;
+  bottom: 130px;
+  left: 64px;
+  max-width: 740px;
+  padding: 24px 32px;
+  background: rgba(5, 12, 28, 0.94);
+  border: 1.5px solid rgba(0, 214, 255, 0.5);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  z-index: 105;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 214, 255, 0.25);
+  animation: cardFlyIn 0.3s var(--ease-spring);
+}
+
+@keyframes cardFlyIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.alexa-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.alexa-pill-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #00D6FF;
+  background: rgba(0, 214, 255, 0.15);
+  padding: 4px 12px;
+  border-radius: 14px;
+}
+
+.alexa-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00D6FF;
+}
+
+.bedrock-model-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #FF9900;
+}
+
+.alexa-card-body {
+  font-size: 19px;
+  line-height: 1.55;
+  color: #FFFFFF;
+  margin-bottom: 14px;
+}
+
+.alexa-card-footer {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   6. Synchronized High-Contrast TV Subtitle Track (BUG-14)
    ========================================================================== */
 .vtt-subtitle-display {
   position: absolute;
   bottom: 470px;
-  left: 720px;
+  left: 50%;
   transform: translateX(-50%);
-  max-width: 850px;
+  max-width: 900px;
   padding: 12px 28px;
   background: rgba(5, 8, 17, 0.92);
   border: 1px solid rgba(0, 168, 225, 0.4);
@@ -1015,4 +1096,57 @@ html, body {
   font-size: 26px;
   padding: 16px 36px;
   border-color: rgba(0, 168, 225, 0.7);
+}
+
+/* ==========================================================================
+   7. Glassmorphic Ambient Toast
+   ========================================================================== */
+.aura-toast {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  padding: 14px 28px;
+  background: rgba(10, 15, 30, 0.92);
+  border: 1.5px solid var(--amazon-gold);
+  border-radius: 30px;
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 24px var(--amazon-gold-glow);
+  z-index: 120;
+  opacity: 0;
+  transition: all 0.35s var(--ease-spring);
+  pointer-events: none;
+}
+
+.aura-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-glow-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--amazon-gold);
+  box-shadow: 0 0 10px var(--amazon-gold);
+}
+
+.toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toast-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.toast-message {
+  font-size: 13px;
+  color: var(--text-secondary);
 }

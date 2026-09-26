@@ -1,10 +1,11 @@
 /**
  * AuraStream Fire TV Application Orchestrator.
- * Connects Video Player, Media Shelf, Spatial Navigation, Aura HUD, and Backend MCP Services.
+ * Connects Video Player, Prime Video X-Ray Drawer, Spatial Navigation, Alexa Voice Bar, and Backend Services.
  * Features:
  * - Dynamic Viewport Scaling preserving 1080p geometry at any screen resolution
- * - Non-blocking Glassmorphic Ambient Toast Notifications (zero alert() calls)
+ * - Inactivity Auto-Hide Engine (4.0s fade into 100% full-bleed cinema video)
  * - Coordinated stream switching with canonical streamData.js
+ * - Real-time telemetry and subtitle synchronization
  */
 
 // Viewport Scaling Engine for 10-foot TV UI
@@ -31,7 +32,7 @@ function setupTVViewportScaling() {
 }
 
 // Glassmorphic Non-Blocking Toast Notification System
-function showToast(title, message, durationMs = 4000) {
+function showToast(title, message, durationMs = 3500) {
   const toastEl = document.getElementById('aura-toast');
   const titleEl = document.getElementById('toast-title');
   const msgEl = document.getElementById('toast-message');
@@ -41,7 +42,6 @@ function showToast(title, message, durationMs = 4000) {
   if (msgEl) msgEl.innerText = message;
 
   toastEl.style.display = 'flex';
-  // Trigger CSS animation on next tick
   requestAnimationFrame(() => {
     toastEl.classList.add('visible');
   });
@@ -59,26 +59,25 @@ window.showToast = showToast;
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Initializing AuraStream Prime Video X-Ray Experience...');
 
-  // Initialize Viewport Scaling First
+  // 1. Initialize Viewport Scaling
   setupTVViewportScaling();
 
-  // Initialize Video Engine with real HTML5 Video
+  // 2. Initialize Video Engine with HTML5 Video
   const player = new window.VideoPlayer('hero-video', 'hero-video-canvas');
   window.PlayerInstance = player;
 
-  // Register Focus Groups for Spatial Navigation
-  const pills = document.querySelectorAll('.tv-pill');
+  // 3. Register Focus Groups with Spatial Navigation
+  const tabs = document.querySelectorAll('.xray-tab');
+  const activeCastCards = document.querySelectorAll('#tray-cast .cast-card');
   const shelfTiles = document.querySelectorAll('.shelf-tile');
-  const controls = document.querySelectorAll('#video-controls');
 
   if (window.SpatialNav) {
-    window.SpatialNav.registerGroup('pills', pills);
-    window.SpatialNav.registerGroup('shelf', shelfTiles);
-    window.SpatialNav.registerGroup('controls', controls);
-    window.SpatialNav.setFocus('pills', 0);
+    window.SpatialNav.registerGroup('tabs', tabs);
+    window.SpatialNav.registerGroup('tray', activeCastCards);
+    window.SpatialNav.setFocus('tabs', 0);
   }
 
-  // Wire Media Shelf Tiles (Click / Enter switches stream)
+  // 4. Wire Catalog Shelf Tiles (Click / Enter switches stream)
   shelfTiles.forEach((tile) => {
     tile.addEventListener('click', () => {
       const streamId = tile.getAttribute('data-stream');
@@ -90,80 +89,39 @@ document.addEventListener('DOMContentLoaded', () => {
       // Visual focus update
       shelfTiles.forEach((t) => t.classList.remove('focused'));
       tile.classList.add('focused');
-    });
-  });
 
-  // Wire Quick Action Pills
-  pills.forEach((pill) => {
-    pill.addEventListener('click', async () => {
-      const action = pill.getAttribute('data-action');
-      console.log(`Action selected: ${action}`);
+      window.showToast('Switching Stream', title);
+      updateSubtitleCue(streamId, 0);
 
-      // Visual pill active state
-      pills.forEach((p) => p.classList.remove('active'));
-      pill.classList.add('active');
-
-      const frameBase64 = player.captureFrameBase64();
-
-      if (action === 'who') {
-        const res = await window.AuraStreamAPI.sendMultimodalQuery(
-          player.activeStreamId,
-          player.currentTime,
-          'Who is on screen?',
-          frameBase64
-        );
-        window.AuraOverlay.showCards(res.trivia_cards);
-      } else if (action === 'tactics') {
-        if (player.activeStreamId !== 'stream_sports') {
-          player.switchStream('stream_sports');
-        }
-        const res = await window.AuraStreamAPI.sendMultimodalQuery(
-          player.activeStreamId,
-          player.currentTime,
-          'Explain this tactical soccer play',
-          frameBase64
-        );
-        window.AuraOverlay.showCards(res.trivia_cards);
-      } else if (action === 'music') {
-        const res = await window.AuraStreamAPI.sendMultimodalQuery(
-          player.activeStreamId,
-          player.currentTime,
-          'What soundtrack is playing right now?',
-          frameBase64
-        );
-        window.AuraOverlay.showCards(res.trivia_cards);
-      } else if (action === 'recap') {
-        const res = await window.AuraStreamAPI.sendMultimodalQuery(
-          player.activeStreamId,
-          player.currentTime,
-          'Catch me up (Spoiler-Free)',
-          frameBase64
-        );
-        window.AuraOverlay.showCards(res.trivia_cards);
-      } else if (action === 'ambient') {
-        const res = await window.AuraStreamAPI.adaptAmbient('family', 'medium', 'PG-13');
-        const nextState = !subtitlesEnabled;
-        setSubtitles(nextState, false);
-        window.showToast(
-          'Aura Living Room Ambient Mode Active',
-          `Dialogue Boost: +4.5dB • Subtitles: Adaptive ${nextState ? 'ON' : 'OFF'} • Rating Cap: PG-13`
-        );
-      } else if (action === 'switch-stream') {
-        const nextStream =
-          player.activeStreamId === 'stream_sintel'
-            ? 'stream_oceans'
-            : player.activeStreamId === 'stream_oceans'
-            ? 'stream_sailing'
-            : player.activeStreamId === 'stream_sailing'
-            ? 'stream_sports'
-            : 'stream_sintel';
-        player.switchStream(nextStream);
-        updateSubtitleCue(player.activeStreamId, 0);
+      // Auto-switch to cast tab for the new movie
+      if (window.AuraOverlay) {
+        window.AuraOverlay.switchTab('cast');
       }
     });
   });
 
-  // Subtitle Synchronization Engine (BUG-14)
+  // 5. Inactivity Auto-Hide Engine for 100% Full-Bleed Cinema Experience
+  let hideTimeout = null;
+  function resetInactivityTimer() {
+    if (window.AuraOverlay) {
+      window.AuraOverlay.showHUD();
+    }
+    clearTimeout(hideTimeout);
+    // If video is playing, auto-hide HUD after 4.0 seconds of no interaction
+    if (player && player.isPlaying) {
+      hideTimeout = setTimeout(() => {
+        if (player.isPlaying && window.AuraOverlay) {
+          window.AuraOverlay.hideHUD();
+        }
+      }, 4000);
+    }
+  }
+
+  // Any keypress or mouse movement reveals HUD and resets timer
+  window.addEventListener('keydown', () => resetInactivityTimer());
+  window.addEventListener('mousemove', () => resetInactivityTimer());
+
+  // 6. Subtitle Synchronization Engine (BUG-14)
   let subtitlesEnabled = false;
 
   function setSubtitles(enabled, isLarge = false) {
@@ -204,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Sync HUD telemetry on timeupdate
+  // 7. Sync HUD telemetry on timeupdate
   let lastFetchedSecond = -1;
   window.addEventListener('tv:timeupdate', async (e) => {
     const { currentTime, streamId } = e.detail;
@@ -220,19 +178,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Handle Alexa Voice Trigger
-  window.addEventListener('tv:execute-query', async (e) => {
-    const query = e.detail.query;
-    console.log(`Executing voice query: "${query}"`);
-    const frameBase64 = player.captureFrameBase64();
-    const res = await window.AuraStreamAPI.sendMultimodalQuery(
-      player.activeStreamId,
-      player.currentTime,
-      query,
-      frameBase64
-    );
-    window.AuraOverlay.showCards(res.trivia_cards);
-  });
-
-  console.log('AuraStream Prime Video X-Ray Ready.');
+  console.log('AuraStream Cinema-Grade Prime Video X-Ray Ready.');
 });

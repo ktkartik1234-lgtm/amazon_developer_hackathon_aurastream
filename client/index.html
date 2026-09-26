@@ -3,259 +3,323 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920, height=1080, user-scalable=no">
-  <title>AuraStream | Living Room Intelligence for Fire TV</title>
+  <title>AuraStream | Living Room Intelligence for Amazon Fire TV</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="tv-app-root">
-    
-    <!-- Real Hardware-Accelerated Video Layer -->
+
+    <!-- 1. 100% Full-Bleed Cinema Video Stage -->
     <div id="video-stage">
       <video id="hero-video" playsinline preload="auto" crossorigin="anonymous" muted autoplay loop poster="assets/tile04.jpg">
         <source src="https://media.w3.org/2010/05/sintel/trailer.mp4" type="video/mp4">
         <source src="https://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
       </video>
-      <!-- Hidden canvas for Amazon Bedrock real-time frame capture -->
       <canvas id="hero-video-canvas" style="display: none;"></canvas>
       <div id="video-vignette" class="video-vignette"></div>
-      <div id="xray-backdrop-dim" class="xray-dim-layer"></div>
-      
+      <div id="video-dim-scrim" class="video-dim-scrim"></div>
+
       <!-- Synchronized TV Subtitle Display -->
       <div id="vtt-subtitle-display" class="vtt-subtitle-display" style="display: none;"></div>
 
       <!-- Video Play/Buffering Affordance -->
       <div id="video-play-affordance" class="video-play-affordance" style="display: none;">
-        <div class="play-pulse-circle">▶</div>
-        <div class="play-affordance-text">Press <span class="remote-key">SELECT</span> to Play</div>
+        <div class="play-pulse-circle">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="#FFFFFF"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="play-affordance-text">Press <kbd class="key-badge">SELECT</kbd> to Play</div>
       </div>
     </div>
 
-    <!-- Top Navigation & Streaming Specs Bar -->
-    <header id="tv-header">
-      <div class="brand-badge">
-        <div class="brand-logo-wrap">
-          <span class="brand-logo">AuraStream</span>
-          <span class="xray-tag">X-RAY</span>
+    <!-- 2. Top Cinema Metadata Bar (Auto-hiding with remote inactivity) -->
+    <header id="tv-header" class="tv-hud-layer visible">
+      <div class="header-left">
+        <div class="brand-badge-wrap">
+          <span class="brand-text">AuraStream</span>
+          <span class="xray-badge">X-RAY</span>
         </div>
         <div class="stream-title-meta">
-          <div id="stream-media-title" class="stream-main-title">Sintel: The Dragon's Ascent</div>
-          <div class="stream-badges-row">
-            <span id="stream-pill-badge" class="stream-pill">FEATURED FILM</span>
-            <span class="spec-badge">4K ULTRA HD</span>
-            <span class="spec-badge">HDR10+</span>
-            <span class="spec-badge">DOLBY ATMOS</span>
-            <span class="spec-badge imdb-badge">★ 8.9 IMDb</span>
+          <h1 id="stream-media-title" class="stream-title">Sintel: The Dragon's Ascent</h1>
+          <div class="stream-tags-row">
+            <span id="stream-pill-badge" class="tag-badge primary">FEATURED FILM</span>
+            <span class="tag-badge">4K ULTRA HD</span>
+            <span class="tag-badge">HDR10+</span>
+            <span class="tag-badge">DOLBY ATMOS</span>
+            <span class="tag-badge imdb">★ 8.9 IMDb</span>
           </div>
         </div>
       </div>
-      <div class="ambient-status">
-        <div class="status-indicator">
-          <div class="pulse-dot"></div>
-          <span>Aura Live X-Ray</span>
+      <div class="header-right">
+        <div class="ambient-pill">
+          <span class="pulse-indicator"></span>
+          <span>Live Scene Sync</span>
         </div>
-        <div class="status-indicator cloud-sync">
-          <span class="sync-icon">⚡</span>
-          <span>AWS Bedrock Multi-Modal</span>
+        <div class="bedrock-pill">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <span>AWS Bedrock Vision Engine</span>
         </div>
       </div>
     </header>
 
-    <!-- Aura Pulse X-Ray Panel (Right Rail) -->
-    <aside id="aura-hud">
-      <div class="glass-panel hud-section">
-        <div class="hud-header-row">
-          <span class="hud-title">In This Scene</span>
-          <span class="hud-count-badge">3 Actors</span>
-        </div>
-        <div id="hud-entity-list" class="entity-list">
-          <div class="entity-row">
-            <img class="entity-avatar-img" src="assets/tile01.jpg" alt="Sintel">
-            <div class="entity-meta">
-              <div class="entity-name">Sintel</div>
-              <div class="entity-role">Lead Protagonist</div>
-              <div class="entity-sub">Halina Reijn • <span class="tag-verified">Verified Cast</span></div>
+    <!-- 3. Prime Video Authentic X-Ray Bottom Drawer & Control Bar (Auto-hiding) -->
+    <div id="xray-drawer" class="tv-hud-layer visible">
+
+      <!-- Horizontal Prime Video X-Ray Tabs (Clean Amazon Ember style, Zero emojis) -->
+      <div class="xray-tabs-bar" role="tablist">
+        <button class="xray-tab active" data-tab="cast" tabindex="0">
+          <svg class="tab-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          <span>In Scene (<span id="cast-count-badge">2</span>)</span>
+        </button>
+        <button class="xray-tab" data-tab="music" tabindex="0">
+          <svg class="tab-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+          <span>Soundtrack</span>
+        </button>
+        <button class="xray-tab" data-tab="trivia" tabindex="0">
+          <svg class="tab-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+          <span>IMDb Trivia</span>
+        </button>
+        <button class="xray-tab" data-tab="tactics" tabindex="0">
+          <svg class="tab-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path d="M12 2a10 10 0 0 0-3 19.5v-3.8l2-1.2V12h2v4.5l2 1.2v3.8A10 10 0 0 0 12 2z"/>
+          </svg>
+          <span>Tactical AI</span>
+        </button>
+        <button class="xray-tab" data-tab="recap" tabindex="0">
+          <svg class="tab-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+          </svg>
+          <span>Alexa+ Catch Up</span>
+        </button>
+        <button class="xray-tab" data-tab="catalog" tabindex="0">
+          <svg class="tab-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>
+          </svg>
+          <span>More Like This</span>
+        </button>
+      </div>
+
+      <!-- Dynamic X-Ray Content Tray (Populated via active tab) -->
+      <div id="xray-tray-content" class="xray-tray-content">
+        <!-- Default: Cast Members in Current Scene -->
+        <div id="tray-cast" class="tray-pane active">
+          <div class="cast-row" id="cast-cards-row">
+            <div class="cast-card focused" tabindex="0">
+              <div class="cast-portrait-wrap">
+                <img class="cast-portrait" src="assets/tile01.jpg" alt="Sintel">
+                <span class="verified-glyph" title="Verified Cast">✓</span>
+              </div>
+              <div class="cast-details">
+                <div class="character-name">Sintel</div>
+                <div class="actor-name">Halina Reijn</div>
+                <div class="role-tag">Lead Protagonist</div>
+                <div class="confidence-tag">99% Bedrock Match</div>
+              </div>
+            </div>
+            <div class="cast-card" tabindex="0">
+              <div class="cast-portrait-wrap">
+                <img class="cast-portrait" src="assets/tile02.jpg" alt="The Shaman">
+                <span class="verified-glyph" title="Verified Cast">✓</span>
+              </div>
+              <div class="cast-details">
+                <div class="character-name">The Shaman</div>
+                <div class="actor-name">Thom Hoffman</div>
+                <div class="role-tag">Hermit Guide</div>
+                <div class="confidence-tag">96% Bedrock Match</div>
+              </div>
             </div>
           </div>
-          <div class="entity-row">
-            <img class="entity-avatar-img" src="assets/tile02.jpg" alt="Shaman">
-            <div class="entity-meta">
-              <div class="entity-name">The Shaman</div>
-              <div class="entity-role">Hermit Guide</div>
-              <div class="entity-sub">Thom Hoffman • <span class="tag-verified">Verified Cast</span></div>
+        </div>
+
+        <!-- Music Pane -->
+        <div id="tray-music" class="tray-pane" style="display: none;">
+          <div class="music-tray-card" tabindex="0">
+            <div class="music-art-wrap">
+              <img src="assets/tile03.jpg" alt="Album Art">
+              <div class="music-eq-waves">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+            <div class="music-info-meta">
+              <div id="tray-soundtrack-title" class="track-title">Jan Morgenstern - The Quest</div>
+              <div class="track-sub">Original Orchestral Score • Performed by Prague Philharmonic</div>
+              <div class="audio-badges-row">
+                <span class="audio-spec-pill">Dolby Atmos Spatial Audio</span>
+                <span class="amazon-music-pill">Available on Amazon Music</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trivia Pane -->
+        <div id="tray-trivia" class="tray-pane" style="display: none;">
+          <div class="trivia-tray-card" tabindex="0">
+            <div class="trivia-header">
+              <span class="imdb-pill-solid">IMDb TRIVIA</span>
+              <span class="trivia-label">Production & Behind the Scenes</span>
+            </div>
+            <p id="tray-trivia-text" class="trivia-body">
+              Directed by Colin Levy and produced by Blender Animation Studio. All character rigging and procedural lighting were built using open-source pipelines.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tactical AI Pane -->
+        <div id="tray-tactics" class="tray-pane" style="display: none;">
+          <div class="tactics-tray-card" tabindex="0">
+            <div class="tactics-meta-col">
+              <div class="tactics-header-row">
+                <span class="tactics-badge">LIVE TACTICAL AI</span>
+                <span class="tactics-formation-name">4-3-3 High Press Transition</span>
+              </div>
+              <div class="tactics-stats-grid">
+                <div class="tstat-box">
+                  <div class="tstat-num">1.84</div>
+                  <div class="tstat-lbl">Expected Goals (xG)</div>
+                </div>
+                <div class="tstat-box">
+                  <div class="tstat-num">58% - 42%</div>
+                  <div class="tstat-lbl">Possession Share</div>
+                </div>
+                <div class="tstat-box">
+                  <div class="tstat-num">34.8 km/h</div>
+                  <div class="tstat-lbl">Peak Sprint Speed</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alexa+ Catch Up Pane -->
+        <div id="tray-recap" class="tray-pane" style="display: none;">
+          <div class="recap-tray-card" tabindex="0">
+            <div class="recap-header">
+              <span class="recap-pill">SPOILER-FREE SYNOPSIS</span>
+              <span class="recap-sync-time">Synchronized to current playback (0:14)</span>
+            </div>
+            <p id="tray-recap-text" class="recap-body">
+              Sintel traverses unforgiving snowy peaks, nursing an injured baby dragon back to health before it is abducted by an adult dragon.
+            </p>
+          </div>
+        </div>
+
+        <!-- More Like This Catalog Shelf -->
+        <div id="tray-catalog" class="tray-pane" style="display: none;">
+          <div class="shelf-track" id="media-shelf">
+            <div class="shelf-tile focused" tabindex="0" data-stream="stream_sintel" data-title="Sintel: The Dragon's Ascent">
+              <img src="assets/tile04.jpg" alt="Sintel">
+              <div class="tile-meta">
+                <div class="tile-title">Dragon's Ascent</div>
+                <div class="tile-sub">Fantasy • 4K UHD</div>
+              </div>
+            </div>
+            <div class="shelf-tile" tabindex="0" data-stream="stream_oceans" data-title="Deep Oceans: Abyssal Realms">
+              <img src="assets/tile05.jpg" alt="Deep Oceans">
+              <div class="tile-meta">
+                <div class="tile-title">Abyssal Realms</div>
+                <div class="tile-sub">Nature • HDR10+</div>
+              </div>
+            </div>
+            <div class="shelf-tile" tabindex="0" data-stream="stream_sailing" data-title="Costa Rica: Whale Tail Voyage">
+              <img src="assets/tile06.jpg" alt="Costa Rica">
+              <div class="tile-meta">
+                <div class="tile-title">Whale Tail Voyage</div>
+                <div class="tile-sub">Travel • 2160p</div>
+              </div>
+            </div>
+            <div class="shelf-tile" tabindex="0" data-stream="stream_sports" data-title="Champions Cup: Madrid vs Manchester">
+              <img src="assets/tile07.jpg" alt="Champions Cup">
+              <div class="tile-meta">
+                <div class="tile-title">Champions Cup</div>
+                <div class="tile-sub">Live Sports • 60fps</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="glass-panel hud-section">
-        <div class="hud-header-row">
-          <span class="hud-title">Now Playing</span>
-          <span class="hud-spec-pill">Dolby Atmos</span>
+      <!-- Video Playback Timeline Scrubber & Remote Control Legend -->
+      <footer id="video-controls">
+        <div class="scrub-container">
+          <div id="scrub-buffered" class="scrub-buffered"></div>
+          <div id="scrub-progress" class="scrub-progress"></div>
         </div>
-        <div class="music-card-content">
-          <div class="music-album-art">
-            <img src="assets/tile03.jpg" alt="Soundtrack Art">
-            <div class="music-eq-bars">
-              <div class="eq-bar"></div>
-              <div class="eq-bar"></div>
-              <div class="eq-bar"></div>
-              <div class="eq-bar"></div>
-            </div>
+        <div class="control-bar">
+          <div class="time-and-status">
+            <span id="playback-state-icon" class="state-icon">❚❚</span>
+            <span id="time-display" class="time-display">0:14 / 0:52</span>
+            <span class="stream-codec-badge">HEVC 2160p • 60 FPS • Dolby Atmos 7.1</span>
           </div>
-          <div class="music-meta">
-            <div id="hud-soundtrack" class="soundtrack-title">Jan Morgenstern - The Quest</div>
-            <div class="soundtrack-artist">Original Orchestral Score</div>
-            <div class="music-action-tag">Available on Amazon Music</div>
+          <div class="remote-hint-strip">
+            <div><kbd class="remote-key">D-PAD</kbd> Navigate</div>
+            <div><kbd class="remote-key">SELECT</kbd> View Details</div>
+            <div><kbd class="remote-key">PAUSE</kbd> Toggle X-Ray</div>
+            <div><kbd class="remote-key">V</kbd> Alexa Voice</div>
+            <div><kbd class="remote-key">C</kbd> Subtitles</div>
+            <div><kbd class="remote-key">BACK</kbd> Hide HUD</div>
           </div>
         </div>
-      </div>
+      </footer>
+    </div>
 
-      <div class="glass-panel hud-section">
-        <div class="hud-header-row">
-          <span class="hud-title">Trivia & Production</span>
-          <span class="hud-spec-pill imdb-pill">IMDb Trivia</span>
-        </div>
-        <div id="hud-trivia-fact" class="trivia-text">
-          Directed by Colin Levy and produced by the Blender Animation Studio. All rendering was completed using open-source procedural lighting pipelines.
-        </div>
-      </div>
-    </aside>
-
-    <!-- Detailed Insight Cards Carousel (Centered Interactive Overlay) -->
-    <div id="card-carousel" style="display: none; opacity: 0;"></div>
-
-    <!-- Amazon-Style Related Titles Shelf -->
-    <div id="media-shelf-container">
-      <div class="shelf-header">
-        <span class="shelf-title">More Like This (Amazon Prime Catalog)</span>
-      </div>
-      <div id="media-shelf" class="shelf-track">
-        <div class="shelf-tile" tabindex="0" data-stream="stream_sintel" data-title="Sintel: The Dragon's Ascent">
-          <img src="assets/tile04.jpg" alt="Movie 1">
-          <div class="tile-meta">
-            <div class="tile-title">Dragon's Ascent</div>
-            <div class="tile-sub">Sci-Fi • 4K UHD</div>
+    <!-- 4. Authentic Alexa Living Room Ambient Bottom Light-Bar (Replaces Web Form) -->
+    <div id="alexa-voice-bar" class="alexa-voice-bar" style="display: none;">
+      <div class="alexa-glow-line"></div>
+      <div class="alexa-bar-inner">
+        <div class="alexa-wave-group">
+          <div class="alexa-cyan-ring"></div>
+          <div class="alexa-wave-bars">
+            <span class="wbar"></span>
+            <span class="wbar"></span>
+            <span class="wbar"></span>
+            <span class="wbar"></span>
+            <span class="wbar"></span>
           </div>
         </div>
-        <div class="shelf-tile" tabindex="0" data-stream="stream_oceans" data-title="Deep Oceans: Abyssal Realms">
-          <img src="assets/tile05.jpg" alt="Movie 2">
-          <div class="tile-meta">
-            <div class="tile-title">Abyssal Realms</div>
-            <div class="tile-sub">Nature • HDR10+</div>
-          </div>
+        <div class="alexa-prompt-wrap">
+          <div class="alexa-title">Alexa+ Voice Remote</div>
+          <div id="alexa-active-transcript" class="alexa-transcript">"Alexa, who is on screen right now?"</div>
         </div>
-        <div class="shelf-tile" tabindex="0" data-stream="stream_sailing" data-title="Costa Rica: Whale Tail Voyage">
-          <img src="assets/tile06.jpg" alt="Movie 3">
-          <div class="tile-meta">
-            <div class="tile-title">Whale Tail Voyage</div>
-            <div class="tile-sub">Travel • 2160p</div>
-          </div>
-        </div>
-        <div class="shelf-tile" tabindex="0" data-stream="stream_sports" data-title="Champions Cup: Madrid vs Manchester">
-          <img src="assets/tile07.jpg" alt="Movie 4">
-          <div class="tile-meta">
-            <div class="tile-title">Champions Cup</div>
-            <div class="tile-sub">Live Sports • 60fps</div>
-          </div>
+        <div class="alexa-chips-row">
+          <button class="alexa-chip focused" data-query="Who is on screen?" tabindex="0">Who's on screen?</button>
+          <button class="alexa-chip" data-query="Explain this tactical soccer play" tabindex="0">Tactical breakdown</button>
+          <button class="alexa-chip" data-query="What soundtrack is playing right now?" tabindex="0">Soundtrack</button>
+          <button class="alexa-chip" data-query="Catch me up (Spoiler-Free)" tabindex="0">Spoiler-free recap</button>
         </div>
       </div>
     </div>
 
-    <!-- Floating Frosted Living Room Action Dock -->
-    <nav id="pill-strip">
-      <button class="tv-pill" data-action="who" tabindex="0">
-        <span class="pill-icon">🔍</span>
-        <span>Who's on Screen?</span>
-      </button>
-      <button class="tv-pill" data-action="tactics" tabindex="0">
-        <span class="pill-icon">⚽</span>
-        <span>Tactical Breakdown</span>
-      </button>
-      <button class="tv-pill" data-action="music" tabindex="0">
-        <span class="pill-icon">🎵</span>
-        <span>Soundtrack</span>
-      </button>
-      <button class="tv-pill" data-action="recap" tabindex="0">
-        <span class="pill-icon">📖</span>
-        <span>Catch Up (Spoiler-Free)</span>
-      </button>
-      <button class="tv-pill" data-action="ambient" tabindex="0">
-        <span class="pill-icon">🏠</span>
-        <span>Family Mode</span>
-      </button>
-      <button class="tv-pill" data-action="switch-stream" tabindex="0">
-        <span class="pill-icon">🔄</span>
-        <span>Switch Video</span>
-      </button>
-    </nav>
-
-    <!-- Video Playback Timeline & Remote Legend -->
-    <footer id="video-controls">
-      <div class="scrub-container">
-        <div id="scrub-buffered" class="scrub-buffered"></div>
-        <div id="scrub-progress" class="scrub-progress"></div>
-      </div>
-      <div class="control-bar">
-        <div class="time-and-status">
-          <span id="playback-state-icon" class="state-icon">▶</span>
-          <span id="time-display" class="time-display">0:00 / 0:52</span>
-          <span class="stream-codec-badge">H.264 • 1080p 60fps • 5.1ch</span>
+    <!-- 5. Floating Alexa AI Response Card (Bedrock Converse Output) -->
+    <div id="alexa-response-card" class="alexa-response-card" style="display: none;">
+      <div class="alexa-card-header">
+        <div class="alexa-pill-tag">
+          <span class="alexa-dot"></span>
+          <span>Alexa+ Intelligence</span>
         </div>
-        <div class="remote-hint-strip">
-          <div><span class="remote-key">D-PAD</span> Browse</div>
-          <div><span class="remote-key">SELECT</span> Play / X-Ray</div>
-          <div><span class="remote-key">BACK</span> Dismiss</div>
-          <div><span class="remote-key">V</span> Alexa Voice</div>
-          <div><span class="remote-key">C</span> Subtitles</div>
-        </div>
+        <div class="bedrock-model-tag" id="alexa-model-tag">Amazon Bedrock • Claude 3.5 Sonnet</div>
       </div>
-    </footer>
+      <div class="alexa-card-body" id="alexa-response-body">
+        Halina Reijn stars as Sintel, a solitary warrior trekking through treacherous snowy mountains searching for her abducted baby dragon Scales.
+      </div>
+      <div class="alexa-card-footer">
+        <span>Press <kbd class="remote-key">BACK</kbd> to Dismiss</span>
+      </div>
+    </div>
 
-    <!-- Glassmorphic Non-Blocking Ambient Toast Notification -->
+    <!-- 6. Non-Blocking Ambient Toast Notification -->
     <div id="aura-toast" class="aura-toast" style="display: none;">
       <div class="toast-glow-dot"></div>
       <div class="toast-content">
         <div id="toast-title" class="toast-title">Aura Ambient Mode Active</div>
-        <div id="toast-message" class="toast-message">Dialogue Boost: +4.5dB • Subtitles Adaptive ON</div>
-      </div>
-    </div>
-
-    <!-- Alexa+ Voice Remote Modal (Focus-Trapped, TV D-Pad Friendly) -->
-    <div id="voice-remote-modal" class="voice-modal-backdrop" style="display: none;">
-      <div class="voice-modal-card">
-        <div class="voice-modal-header">
-          <div class="alexa-ring-animation"></div>
-          <div class="voice-header-text">
-            <div class="voice-modal-title">Alexa+ Voice Remote Simulation</div>
-            <div class="voice-modal-sub">Streamable HTTP MCP • Amazon Bedrock Multi-Modal</div>
-          </div>
-        </div>
-        <div class="voice-modal-prompt">Choose a voice query or enter custom command:</div>
-        <div id="voice-preset-list" class="voice-preset-list">
-          <button class="voice-preset-pill" tabindex="0" data-query="Who is on screen?">
-            <span class="preset-icon">🔍</span>
-            <span>Who is on screen?</span>
-          </button>
-          <button class="voice-preset-pill" tabindex="0" data-query="Explain this tactical play">
-            <span class="preset-icon">⚽</span>
-            <span>Explain this tactical play</span>
-          </button>
-          <button class="voice-preset-pill" tabindex="0" data-query="What soundtrack is playing?">
-            <span class="preset-icon">🎵</span>
-            <span>What soundtrack is playing?</span>
-          </button>
-          <button class="voice-preset-pill" tabindex="0" data-query="Catch me up (Spoiler-Free)">
-            <span class="preset-icon">📖</span>
-            <span>Catch me up (Spoiler-Free)</span>
-          </button>
-        </div>
-        <div class="voice-input-row">
-          <input type="text" id="voice-text-input" placeholder="Type custom voice instruction..." tabindex="0">
-          <button id="voice-submit-btn" class="voice-submit-btn" tabindex="0">Ask Aura</button>
-        </div>
-        <div class="voice-modal-footer">
-          <span>Press <span class="remote-key">BACK</span> to Dismiss • Press <span class="remote-key">SELECT</span> to Speak Query</span>
-        </div>
+        <div id="toast-message" class="toast-message">Dialogue Boost: +4.5dB • Subtitles: Adaptive ON • Rating Cap: PG-13</div>
       </div>
     </div>
 
