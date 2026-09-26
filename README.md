@@ -31,16 +31,16 @@ Traditional streaming interfaces treat the television as a passive display. View
 ┌───────────────────────────────────────────────────────────────────────────────────┐
 │                       FIRE TV / VEGA OS CLIENT (10-Foot UI)                       │
 │                                                                                   │
-│  ┌───────────────────────────────────────┬─────────────────────────────────────┐  │
-│  │         HERO VIDEO CANVAS             │          AURA PULSE HUD             │  │
-│  │     60 FPS Streaming Viewport         │    Live Cast | Music | Trivia       │  │
-│  └───────────────────────────────────────┴─────────────────────────────────────┘  │
-│                                    ▲                                              │
-│                        SpatialNav  │ (D-Pad Codes: 37-40, 19-23, Select, Back)   │
-│                                    ▼                                              │
 │  ┌─────────────────────────────────────────────────────────────────────────────┐  │
-│  │       CONTEXTUAL QUICK-ACTION PILLS & INTERACTIVE GLASSMORPHISM CARDS       │  │
-│  │   "Who is on screen?" | "Explain tactics" | "Soundtrack" | "Family Adapt"   │  │
+│  │                    FULL-BLEED CINEMA VIDEO CANVAS (1080p)                   │  │
+│  │    Synchronized WebVTT Subtitles | 4.0s Inactivity Auto-Hide Engine         │  │
+│  └──────────────────────────────────────┬──────────────────────────────────────┘  │
+│                                         │                                         │
+│  ┌──────────────────────────────────────┴──────────────────────────────────────┐  │
+│  │                 PRIME VIDEO X-RAY DRAWER & ALEXA LIGHT-BAR                  │  │
+│  │  • Slide-Up X-Ray: In Scene (Cast) | Soundtrack | Trivia | Tactics | Recap  │  │
+│  │  • Spatial D-Pad Focus State Machine (Tabs ⟷ Content Cards ⟷ Media Keys)   │  │
+│  │  • Alexa Bottom Cyan LED Light-Strip + Floating Response Reasoning Card     │  │
 │  └──────────────────────────────────────┬──────────────────────────────────────┘  │
 └─────────────────────────────────────────┼─────────────────────────────────────────┘
                                           │ 
@@ -55,14 +55,14 @@ Traditional streaming interfaces treat the television as a passive display. View
 │  • `generate_spoiler_free_recap(current_time, stream_id)`                         │
 └─────────────────────────────────────────┬─────────────────────────────────────────┘
                                           │
-                        Boto3 / AWS SDK   │ (Bedrock Runtime)
+                        Boto3 / AWS SDK   │ (Bedrock Runtime Converse API)
                                           ▼
 ┌───────────────────────────────────────────────────────────────────────────────────┐
 │                   AWS BEDROCK & MULTI-MODAL REASONING LAYER                       │
 │                                                                                   │
 │  • Claude 3.5 Sonnet & Amazon Nova Pro Vision Analysis                            │
-│  • Unified Boto3 Converse API Integration                                         │
-│  • Verified Fallback Engine for Zero-Lag Offline Evaluation                       │
+│  • Unified Boto3 Converse API with Intent Priority Router                         │
+│  • 3.0s Bedrock Client Circuit Breaker with Zero-Lag Local Cloud Cache Fallback   │
 └───────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -74,14 +74,14 @@ Traditional streaming interfaces treat the television as a passive display. View
 - Python 3.10+ (Tested on Python 3.13)
 - Modern web browser (Chrome, Edge, Firefox) or Fire TV / Vega OS Simulator
 
-### Step 1: Install Dependencies
+### Step 1: Install Dependencies & Editable Package
 ```bash
 cd amazon_developer_hackathon_aurastream
-pip install fastapi uvicorn pydantic mcp boto3 botocore sse-starlette httpx pytest
+pip install -e .
 ```
 
 ### Step 2: Run Automated Test Suite
-Verify that all 50 unit, integration, intent router, and regression tests pass:
+Verify that all 51 unit, integration, intent router, and regression tests pass:
 ```bash
 python -m pytest core/tests -v
 ```
@@ -89,13 +89,13 @@ python -m pytest core/tests -v
 ### Step 3: Launch AuraStream Server & Fire TV Client
 Launch via the zero-friction runner:
 ```bash
-python run.py
+python run.py --reload
 ```
-*(Alternatively: `python -m uvicorn core.app.main:app --app-dir . --host 127.0.0.1 --port 8000 --reload`)*
+*(Alternatively, execute the CLI tool directly: `aurastream --reload`)*
 
 ### Step 4: Open Fire TV 10-Foot Experience
 Open your browser or Fire TV WebView simulator to:
-**`http://localhost:8000/`**
+**`http://localhost:8000/`** (Press `F11` for true 10-foot fullscreen TV experience)
 
 ---
 
@@ -103,11 +103,14 @@ Open your browser or Fire TV WebView simulator to:
 
 | Remote Action | Keyboard Key | Android TV Keycode | Function |
 | :--- | :--- | :--- | :--- |
-| **D-Pad Left / Right** | `ArrowLeft` / `ArrowRight` | `21` / `22` | Navigate between Action Pills or Insight Cards |
-| **D-Pad Up / Down** | `ArrowUp` / `ArrowDown` | `19` / `20` | Move focus between Action Pills and Card Carousel |
-| **Select / Center** | `Enter` | `13` / `23` / `66` | Activate selected pill or view detailed card |
-| **Back Button** | `Escape` / `Backspace` | `4` / `27` | Dismiss open cards overlay |
-| **Alexa Voice Trigger** | `V` | Key `V` | Simulate Alexa+ push-to-talk speech query |
+| **Play / Pause / X-Ray** | `Space` / `k` | `85` / `179` (`MediaPlayPause`) | Toggle playback and open/close Prime Video X-Ray drawer |
+| **D-Pad Left / Right** | `ArrowLeft` / `ArrowRight` | `21` / `22` | Navigate between X-Ray tabs or actor/soundtrack cards |
+| **D-Pad Up / Down** | `ArrowUp` / `ArrowDown` | `19` / `20` | Traverse between X-Ray Tabs and Content Tray cards |
+| **Select / Center** | `Enter` | `13` / `23` / `66` | Activate selected tab or stream item |
+| **Back Button** | `Escape` / `Backspace` | `4` / `27` | Dismiss X-Ray drawer / Alexa card to full-bleed video |
+| **Alexa Voice Trigger** | `V` | Key `V` | Trigger Alexa+ bottom glowing cyan LED light-bar |
+| **Subtitle / CC Toggle** | `C` | Key `C` / `CC` | Toggle synchronized dialog and sports commentary subtitles |
+| **Fast Forward / Rewind** | `]` / `[` | `228` / `227` | Seek 10s forward or backward in stream |
 
 ---
 
