@@ -25,7 +25,21 @@ Traditional streaming interfaces treat the television as a passive display. View
 
 ---
 
-## 2. System Architecture
+## 2. Living Room Experience & UI Showcase
+
+| Prime Video X-Ray Slide-Up Drawer | Alexa+ Voice Remote & Bedrock Reasoning |
+| :---: | :---: |
+| ![Prime Video X-Ray Drawer](client/previews/cinema_xray_open.png) | ![Alexa+ Voice Remote](client/previews/cinema_alexa_bar.png) |
+| **Real-time Cast Matching (99% Bedrock Match)** | **Glowing Cyan LED Bar & Spoiler-Free Recap** |
+
+| Synchronized Soundtrack Detection | Full-Bleed Cinema Viewing (Auto-Hide) |
+| :---: | :---: |
+| ![Soundtrack Detection](client/previews/cinema_music_tab.png) | ![Cinema Mode](client/previews/cinema_pure_video.png) |
+| **Animated Audio Waves & Amazon Music** | **Zero UI Clutter with 4.0s Auto-Fade** |
+
+---
+
+## 3. System Architecture
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────────────┐
@@ -68,7 +82,7 @@ Traditional streaming interfaces treat the television as a passive display. View
 
 ---
 
-## 3. Quickstart & Local Execution
+## 4. Quickstart & Local Execution
 
 ### Prerequisites
 - Python 3.10+ (Tested on Python 3.13)
@@ -99,7 +113,7 @@ Open your browser or Fire TV WebView simulator to:
 
 ---
 
-## 4. 10-Foot Remote Controls & Navigation Legend
+## 5. 10-Foot Remote Controls & Navigation Legend
 
 | Remote Action | Keyboard Key | Android TV Keycode | Function |
 | :--- | :--- | :--- | :--- |
@@ -114,7 +128,7 @@ Open your browser or Fire TV WebView simulator to:
 
 ---
 
-## 5. Amazon Developer Hackathon Compliance Checklist
+## 6. Amazon Developer Hackathon Compliance Checklist
 
 - [x] **Primary Track**: Fire TV (works cleanly in Fire TV / Vega simulator and TV WebView).
 - [x] **Mini-Challenge 1 (AWS Builder)**: Direct Amazon Bedrock Converse API multi-modal integration in `core/app/aws/bedrock.py`.
@@ -126,7 +140,7 @@ Open your browser or Fire TV WebView simulator to:
 
 ---
 
-## 6. Judges & Collaborator Access Guide
+## 7. Judges & Collaborator Access Guide
 
 If accessing this repository privately, the following Amazon Developer Relations team members must be invited per the official hackathon rules:
 - `chris-trag` (Chris Traganos)

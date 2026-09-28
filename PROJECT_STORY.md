@@ -30,6 +30,8 @@ The television screen should be an active, intelligent participant in the room. 
    - Crisp 1080p/4K cinema streaming canvas with zero persistent UI clutter.
    - **4.0s Inactivity Auto-Fade**: Controls, trays, and chrome dissolve seamlessly into full-screen video during continuous viewing.
    - **Synchronized Subtitle Engine**: High-contrast WebVTT captions with ambient household dialogue boosting (+4.5 dB).
+   
+   ![Full-Bleed Cinema Viewing](client/previews/cinema_pure_video.png)
 
 2. **Prime Video X-Ray Slide-Up Drawer**:
    - Pressing `SPACE` or D-Pad `UP` glides up an authentic frosted glass (`backdrop-filter: blur(24px)`) drawer.
@@ -37,14 +39,20 @@ The television screen should be an active, intelligent participant in the room. 
    - **Soundtrack Tab**: Active music score detection with live animated SVG audio visualizer equalizer waves.
    - **Scene Trivia**: Synchronized production facts and trivia locked to the exact frame timestamp.
 
+   ![Prime Video X-Ray Slide-Up Drawer](client/previews/cinema_xray_open.png)
+
 3. **Alexa+ Voice Remote & Spoiler-Free Recaps**:
    - Pressing `V` activates the glowing **Alexa cyan LED light-strip** across the lower bezel with real-time waveform visualizers.
    - Viewers can ask: *"Alexa, catch me up on what happened"* or *"Who is on screen right now?"*.
    - AuraStream enforces a **timestamp-bounded prompt envelope** in Amazon Bedrock, ensuring recaps synthesize only elapsed scenes with strictly **zero future plot spoilers**.
 
-4. **Live Sports Tactical AI Breakdown**:
+   ![Alexa+ Voice Remote & Spoiler-Free Recaps](client/previews/cinema_alexa_bar.png)
+
+4. **Live Sports Tactical AI Breakdown & Soundtrack Detection**:
    - Seamlessly switch from movies to live soccer matches (*Champions Cup: Madrid vs Manchester*).
    - AWS Bedrock vision models analyze pitch camera feeds in real time to project tactical formations (*4-3-3 High Press*), team pressing zones, real-time Expected Goals (1.84 xG), and player sprint velocities directly onto the TV screen.
+
+   ![Soundtrack Detection and Audio Visualizer](client/previews/cinema_music_tab.png)
 
 ---
 

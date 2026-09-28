@@ -26,5 +26,5 @@ Thumbs.db
 *.tmp
 *.log
 *.egg-info/
-client/previews/
+# client/previews/ tracked for repository documentation
 client/*.png
