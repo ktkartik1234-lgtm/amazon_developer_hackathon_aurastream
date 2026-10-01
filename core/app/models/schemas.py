@@ -73,3 +73,9 @@ class AmbientProfile(BaseModel):
     content_rating_cap: str = Field(default="PG-13", description="Maximum rating permitted")
     subtitles_adaptive: bool = True
     dialogue_enhancement: bool = True
+
+
+class RemoteCommandRequest(BaseModel):
+    command: str = Field(..., max_length=64, description="Fire TV command, e.g. 'pause', 'switch_stream'")
+    argument: Optional[str] = Field(default=None, max_length=128, description="Optional argument, e.g. target stream_id")
+    source: str = Field(default="alexa_plus", max_length=64, description="Originating surface, e.g. 'alexa_plus_mcp' or 'rest'")

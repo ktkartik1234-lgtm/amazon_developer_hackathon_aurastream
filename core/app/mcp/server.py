@@ -9,6 +9,7 @@ from typing import Dict, Any, Optional
 from mcp.server.mcpserver import MCPServer
 from ..aws.telemetry import get_telemetry_for_timestamp, SCENE_DATABASE
 from ..aws.bedrock import bedrock_engine
+from ..commands import command_bus, CommandValidationError
 from ..models.schemas import (
     MultiModalAnalysisRequest,
     AmbientProfile,
@@ -129,6 +130,32 @@ def generate_spoiler_free_recap(
         "genre": telemetry.genre,
     }
     return json.dumps(recap, indent=2)
+
+
+@mcp_server.tool()
+def dispatch_fire_tv_command(command: str, argument: str = "") -> str:
+    """
+    Dispatch a remote-control command to the paired Fire TV client over the
+    AuraStream command bus (Server-Sent Events). Lets Alexa+ actually drive the
+    living room TV instead of only describing controls.
+
+    Supported commands:
+      play | pause | toggle_playback | seek_forward | seek_back | restart
+      switch_stream (argument = stream_id, e.g. stream_sports)
+      open_xray | toggle_subtitles | hide_hud
+    """
+    try:
+        event = command_bus.dispatch(command, argument or None, source="alexa_plus_mcp")
+    except CommandValidationError as err:
+        return json.dumps({"status": "rejected", "error": str(err)}, indent=2)
+
+    result = {
+        "status": "dispatched",
+        "event": event,
+        "delivery": "Fire TV client consumes commands via SSE at /api/events",
+        "queue_depth": command_bus.depth(),
+    }
+    return json.dumps(result, indent=2)
 
 
 # Build the ASGI streamable HTTP app

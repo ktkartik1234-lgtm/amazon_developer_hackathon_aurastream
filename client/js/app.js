@@ -121,6 +121,67 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('keydown', () => resetInactivityTimer());
   window.addEventListener('mousemove', () => resetInactivityTimer());
 
+  // 5b. Alexa+ / MCP Fire TV Command Bus (Server-Sent Events).
+  // Remote surfaces (Alexa+ voice, MCP tools, REST callers) drive this TV live.
+  function handleFireTvCommand(cmd) {
+    if (!cmd || !cmd.command) return;
+    const arg = cmd.argument || null;
+    switch (cmd.command) {
+      case 'play':
+        if (player.video && player.video.paused) player.togglePlay();
+        break;
+      case 'pause':
+        if (player.video && !player.video.paused) player.togglePlay();
+        break;
+      case 'toggle_playback':
+        player.togglePlay();
+        break;
+      case 'seek_forward':
+        player.seek(10);
+        break;
+      case 'seek_back':
+        player.seek(-10);
+        break;
+      case 'restart':
+        player.restart();
+        break;
+      case 'switch_stream':
+        if (arg && player.streams[arg]) {
+          player.switchStream(arg);
+          updateSubtitleCue(arg, 0);
+          if (window.AuraOverlay) window.AuraOverlay.switchTab('cast');
+        }
+        break;
+      case 'open_xray':
+        if (window.AuraOverlay) window.AuraOverlay.showHUD();
+        break;
+      case 'toggle_subtitles':
+        setSubtitles(!subtitlesEnabled, false);
+        break;
+      case 'hide_hud':
+        if (window.AuraOverlay) window.AuraOverlay.hideHUD();
+        break;
+      default:
+        return;
+    }
+    window.showToast(
+      'Alexa+ Command',
+      `${cmd.command.replace(/_/g, ' ')}${arg ? `: ${arg}` : ''} • via ${cmd.source || 'remote'}`
+    );
+  }
+  window.AuraStreamAPI.subscribeFireTvCommands(handleFireTvCommand);
+
+  // 5c. Adaptive Ambient Household Mode ('A' key) — applies audio/subtitle/rating
+  // adaptation through the /api/ambient-adapt endpoint.
+  window.addEventListener('tv:ambient-adapt', async () => {
+    const res = await window.AuraStreamAPI.adaptAmbient('family', 'medium', 'PG-13');
+    const cmds = res.fire_tv_commands || {};
+    window.showToast(
+      'Ambient Mode Adapted',
+      `Dialogue Boost: +${cmds.dialogue_boost_db || 0}dB • Subtitles: ${cmds.subtitles_enabled ? 'ON' : 'OFF'} • Rating Cap: ${cmds.content_safety_filter || 'PG-13'}`
+    );
+  });
+
   // 6. Subtitle Synchronization Engine (BUG-14)
   let subtitlesEnabled = false;
 
@@ -176,6 +237,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const telem = await window.AuraStreamAPI.getTelemetry(streamId, currentTime);
       window.AuraOverlay.updateHUD(telem);
     }
+  });
+
+  // 7b. Immediate X-Ray HUD refresh on stream switch (even while paused)
+  window.addEventListener('tv:stream-switch', async (e) => {
+    const { currentTime, streamId } = e.detail;
+    const telem = await window.AuraStreamAPI.getTelemetry(streamId, currentTime);
+    window.AuraOverlay.updateHUD(telem);
   });
 
   console.log('AuraStream Cinema-Grade Prime Video X-Ray Ready.');

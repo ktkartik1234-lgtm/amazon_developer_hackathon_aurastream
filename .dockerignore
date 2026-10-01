@@ -1,0 +1,21 @@
+# Version control & CI
+.git
+.github
+.gitignore
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Source archives & docs not needed at runtime
+SOURCE USED/
+client/previews/
+*.zip
+
+# OS noise
+Thumbs.db
+.DS_Store

@@ -999,6 +999,58 @@ body, html {
   transform: scale(1.05);
 }
 
+/* Free-text Alexa+ query input (browser / simulator demos) */
+.alexa-freeform {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alexa-freeform input {
+  width: 340px;
+  padding: 10px 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.alexa-freeform input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 500;
+}
+
+.alexa-freeform input:focus {
+  border-color: #00D6FF;
+  box-shadow: 0 0 18px rgba(0, 214, 255, 0.5);
+  background: rgba(0, 214, 255, 0.12);
+}
+
+.alexa-ask-btn {
+  padding: 10px 22px;
+  border-radius: 22px;
+  border: none;
+  background: linear-gradient(135deg, #00D6FF, #0077A3);
+  color: #00121F;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.alexa-ask-btn:focus,
+.alexa-ask-btn.focused {
+  box-shadow: 0 0 20px rgba(0, 214, 255, 0.7);
+  transform: scale(1.05);
+}
+
 /* ==========================================================================
    5. Floating Alexa Response Card (Bedrock Vision Output)
    ========================================================================== */

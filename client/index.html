@@ -264,6 +264,8 @@
             <div><kbd class="remote-key">PAUSE</kbd> Toggle X-Ray</div>
             <div><kbd class="remote-key">V</kbd> Alexa Voice</div>
             <div><kbd class="remote-key">C</kbd> Subtitles</div>
+            <div><kbd class="remote-key">]</kbd>/<kbd class="remote-key">[</kbd> Seek 10s</div>
+            <div><kbd class="remote-key">A</kbd> Ambient</div>
             <div><kbd class="remote-key">BACK</kbd> Hide HUD</div>
           </div>
         </div>
@@ -288,6 +290,11 @@
           <div class="alexa-title">Alexa+ Voice Remote</div>
           <div id="alexa-active-transcript" class="alexa-transcript">"Alexa, who is on screen right now?"</div>
         </div>
+        <form id="alexa-freeform" class="alexa-freeform" autocomplete="off">
+          <input id="alexa-freeform-input" type="text" maxlength="120"
+                 placeholder="Ask Alexa+ anything about this scene..." aria-label="Ask Alexa+ a question">
+          <button type="submit" class="alexa-ask-btn">ASK</button>
+        </form>
         <div class="alexa-chips-row">
           <button class="alexa-chip focused" data-query="Who is on screen?" tabindex="0">Who's on screen?</button>
           <button class="alexa-chip" data-query="Explain this tactical soccer play" tabindex="0">Tactical breakdown</button>

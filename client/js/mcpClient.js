@@ -26,10 +26,47 @@ class AuraStreamClient {
         title: stream.title || 'AuraStream Featured Media',
         genre: stream.genre || 'Entertainment',
         actors_in_scene: entry ? entry.actors : [],
+        objects_in_scene: entry ? (entry.objects || []) : [],
         soundtrack: entry ? entry.soundtrack : null,
         trivia_fact: entry ? entry.trivia_fact : null,
         sports_telemetry: entry ? entry.sports_telemetry : null,
+        subtitles: entry ? (entry.subtitles || null) : null,
       };
+    }
+  }
+
+  /**
+   * Subscribe to the Fire TV command bus (Server-Sent Events).
+   * Alexa+ / MCP-dispatched commands (pause, seek, switch_stream, ...) arrive here.
+   * EventSource reconnects automatically and replays via Last-Event-ID.
+   */
+  subscribeFireTvCommands(onCommand) {
+    if (!window.EventSource) return null;
+    const source = new EventSource(`${this.baseUrl}/api/events`);
+    source.addEventListener('fire_tv_command', (e) => {
+      try {
+        const cmd = JSON.parse(e.data);
+        console.log('Fire TV command received:', cmd);
+        if (typeof onCommand === 'function') onCommand(cmd);
+      } catch (parseErr) {
+        console.warn('Malformed Fire TV command payload:', parseErr);
+      }
+    });
+    source.onerror = () => console.warn('Fire TV command stream interrupted; auto-reconnecting...');
+    return source;
+  }
+
+  async sendRemoteCommand(command, argument = null, source = 'rest') {
+    try {
+      const res = await fetch(`${this.baseUrl}/api/remote-command`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command, argument, source })
+      });
+      return await res.json();
+    } catch (err) {
+      console.warn('Remote command dispatch failed:', err);
+      return { status: 'failed', error: String(err) };
     }
   }
 

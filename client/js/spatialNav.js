@@ -61,6 +61,17 @@ class SpatialNavigationManager {
       const key = e.key;
       const code = e.keyCode;
 
+      // While typing in a text field (e.g. free-text Alexa query), do not
+      // hijack keys for spatial navigation. Escape blurs back to the remote flow.
+      const activeEl = e.target;
+      if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+        if (key === 'Escape') {
+          e.preventDefault();
+          activeEl.blur();
+        }
+        return;
+      }
+
       // Handle Fire TV Back key (Escape 27, Android Back 4, Backspace 8)
       if (key === 'Escape' || key === 'Backspace' || code === 4 || code === 27) {
         e.preventDefault();
@@ -119,6 +130,31 @@ class SpatialNavigationManager {
       if (key === 'v' || key === 'V') {
         e.preventDefault();
         window.dispatchEvent(new CustomEvent('tv:voice-trigger'));
+        return;
+      }
+
+      // Bracket seek keys: ']' +10s, '[' -10s (Fire TV remote fast-forward / rewind)
+      if (key === ']' || key === '[') {
+        e.preventDefault();
+        if (window.PlayerInstance) {
+          window.PlayerInstance.seek(key === ']' ? 10 : -10);
+        }
+        return;
+      }
+
+      // 'r' or 'R' restarts playback from the beginning
+      if (key === 'r' || key === 'R') {
+        e.preventDefault();
+        if (window.PlayerInstance) {
+          window.PlayerInstance.restart();
+        }
+        return;
+      }
+
+      // 'a' or 'A' triggers Adaptive Ambient Household Mode
+      if (key === 'a' || key === 'A') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('tv:ambient-adapt'));
         return;
       }
     });

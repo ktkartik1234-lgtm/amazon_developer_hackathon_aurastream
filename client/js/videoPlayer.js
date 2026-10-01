@@ -192,6 +192,14 @@ class VideoPlayerEngine {
     this.video.currentTime = Math.max(0, Math.min(this.duration, this.video.currentTime + delta));
   }
 
+  restart() {
+    if (!this.video) return;
+    this.video.currentTime = 0;
+    if (this.video.paused) {
+      this.video.play().catch((e) => console.warn('Restart play prevented:', e));
+    }
+  }
+
   switchStream(streamId) {
     const stream = this.streams[streamId] || this.streams['stream_sintel'];
     if (!stream || !this.video) return;
@@ -209,6 +217,13 @@ class VideoPlayerEngine {
     const badgeEl = document.getElementById('stream-pill-badge');
     if (titleEl) titleEl.innerText = stream.title;
     if (badgeEl) badgeEl.innerText = stream.badge;
+
+    // Refresh X-Ray HUD telemetry immediately (even while paused)
+    window.dispatchEvent(
+      new CustomEvent('tv:stream-switch', {
+        detail: { currentTime: 0, streamId: streamId },
+      })
+    );
 
     // Reset telemetry interval
     this.startTelemetryInterval();

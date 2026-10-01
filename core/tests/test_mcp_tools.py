@@ -51,3 +51,22 @@ def test_mcp_tool_spoiler_free_recap():
     data = json.loads(result_json)
     assert data["current_position_seconds"] == 75.0
     assert "spoiler_free_summary" in data
+
+
+def test_mcp_tool_dispatch_fire_tv_command():
+    from core.app.mcp.server import dispatch_fire_tv_command
+
+    result_json = dispatch_fire_tv_command(command="pause")
+    data = json.loads(result_json)
+    assert data["status"] == "dispatched"
+    assert data["event"]["command"] == "pause"
+    assert data["event"]["source"] == "alexa_plus_mcp"
+
+
+def test_mcp_tool_dispatch_rejects_unknown_command():
+    from core.app.mcp.server import dispatch_fire_tv_command
+
+    result_json = dispatch_fire_tv_command(command="self_destruct")
+    data = json.loads(result_json)
+    assert data["status"] == "rejected"
+    assert "error" in data

@@ -23,10 +23,12 @@
    - <kbd>SPACE</kbd> or <kbd>UP</kbd>: Open / toggle Prime Video X-Ray bottom drawer.
    - <kbd>LEFT</kbd> / <kbd>RIGHT</kbd>: Navigate X-Ray tabs or actor/soundtrack/trivia cards.
    - <kbd>DOWN</kbd>: Step focus down from tabs to content cards.
-   - <kbd>V</kbd>: Activate Alexa+ Voice Remote light-bar.
+   - <kbd>V</kbd>: Activate Alexa+ Voice Remote light-bar (type any free-text question into the "Ask Alexa+" input).
    - <kbd>C</kbd>: Toggle synchronized Closed Captions / Subtitles.
-   - <kbd>BACK</kbd> / <kbd>ESC</kbd>: Dismiss drawer / hide overlays back to full-bleed video.
+   - <kbd>]</kbd> / <kbd>[</kbd>: Seek 10 seconds forward / backward.
    - <kbd>R</kbd>: Reset playback to beginning.
+   - <kbd>A</kbd>: Apply Adaptive Ambient Household Mode (dialogue boost + adaptive subtitles).
+   - <kbd>BACK</kbd> / <kbd>ESC</kbd>: Dismiss drawer / hide overlays back to full-bleed video.
 
 ---
 
@@ -48,8 +50,9 @@
 * **Visual**: Press <kbd>V</kbd> (or trigger Fire TV Voice Remote).
 * **Action**:
   - The authentic **Alexa bottom LED light-strip** pulses across the lower bezel with glowing cyan rings and real-time audio visualizer waveforms.
-  - The simulated query fires: *"Alexa, who is on screen right now?"* (or select **"Spoiler-free recap"**).
+  - The simulated query fires: *"Alexa, who is on screen right now?"* (or type any custom question into the **"Ask Alexa+"** free-text input — the Bedrock Intent Priority Router classifies it live).
   - A glassmorphic Alexa response card glides down from the top right, delivering an AWS Bedrock Converse API response strictly bounded to the current timestamp with zero future plot spoilers.
+  - **Cross-device payoff**: in a second terminal, dispatch `curl -X POST http://127.0.0.1:8000/api/remote-command -H "Content-Type: application/json" -d '{"command":"pause","source":"alexa_plus"}'` — the video pauses on screen instantly via the MCP Fire TV Command Bus (Server-Sent Events), proving Alexa+ actually drives the TV.
   - Press <kbd>ESC</kbd> to dismiss.
 * **Voiceover / Spoken Script**:
   > *"With Alexa+ Voice Remote integration, viewers never have to reach for their phones. Pressing the voice key activates the signature Alexa light-bar. Powered by Amazon Bedrock and the 2025-11-25 Model Context Protocol, AuraStream queries video telemetry to answer questions or deliver spoiler-free catch-ups bounded strictly to the elapsed video."*
@@ -63,7 +66,7 @@
   - Select **"Champions Cup: Madrid vs Manchester"** and press <kbd>ENTER</kbd>.
   - Stream switches seamlessly to the soccer broadcast. The live telemetry updates.
   - Navigate to the **Tactical AI** tab.
-  - Real-time tactical metrics appear: *4-3-3 High Press formation*, *1.84 xG Expected Goals*, *62% Possession*, and *Sprint Speed Tracking*.
+  - Real-time tactical metrics appear: *4-3-3 High Press formation*, *1.84 xG Expected Goals*, *58% – 42% Possession Share*, and *Sprint Speed Tracking*.
 * **Voiceover / Spoken Script**:
   > *"AuraStream isn't just for movies. In live sports mode, AWS Bedrock vision analyzes the pitch in real-time, extracting tactical formations, team pressing traps, expected goals (xG), and player sprint velocities directly onto the living room screen."*
 
@@ -81,21 +84,22 @@
 ---
 
 ### 🛠️ Scene 5: Architectural Compliance & Automated Verification (2:30 - 2:50)
-* **Visual**: Quick cut to terminal showing all 51 automated tests passing and the `/mcp` Streamable HTTP endpoint.
+* **Visual**: Quick cut to terminal showing all 67 automated tests passing and the `/mcp` Streamable HTTP endpoint.
 * **Command**:
   ```bash
   python -m pytest core/tests -v
   ```
 * **Voiceover / Spoken Script**:
-  > *"Under the hood, AuraStream is production-engineered: 51 automated tests passing, Streamable HTTP MCP server, AWS Bedrock Converse integration, and full compliance with Fire OS and Vega OS standards. Open source under the MIT License, with an empirical Amazon DevRel friction log. This is AuraStream."*
+  > *"Under the hood, AuraStream is production-engineered: 67 automated tests passing, Streamable HTTP MCP server, AWS Bedrock Converse integration, and full compliance with Fire OS and Vega OS standards. Open source under the MIT License, with an empirical Amazon DevRel friction log. This is AuraStream."*
 
 ---
 
 ## 3. Pre-Flight Recording Verification Checklist
 
 - [ ] Browser in Fullscreen mode (`F11`) at 1920x1080 resolution.
-- [ ] Backend running (`python run.py --reload`) with all 51 tests verified (`python -m pytest core/tests -q`).
+- [ ] Backend running (`python run.py --reload`) with all 67 tests verified (`python -m pytest core/tests -q`).
 - [ ] Subtitles toggle (<kbd>C</kbd>) verified operational.
 - [ ] 4-second auto-hide fade verified operational.
 - [ ] Alexa light-bar (<kbd>V</kbd>) and X-Ray drawer (<kbd>SPACE</kbd>) verified operational.
+- [ ] Alexa command bus verified: `POST /api/remote-command` pause visibly pauses the TV.
 - [ ] Final recording strictly under **180 seconds** (3:00 minutes).

@@ -4,20 +4,25 @@ Hosts the Streamable HTTP MCP Server and serves the Fire TV / Vega OS Web Client
 """
 
 import os
+import json
+import asyncio
 from pathlib import Path
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, FileResponse
+from sse_starlette.sse import EventSourceResponse
 
 from .mcp.server import mcp_server, mcp_asgi_app
 from .aws.telemetry import get_telemetry_for_timestamp
 from .aws.bedrock import bedrock_engine
+from .commands import command_bus, CommandValidationError, COMMAND_SET
 from .models.schemas import (
     MultiModalAnalysisRequest,
     MultiModalAnalysisResponse,
     SceneTelemetry,
     AmbientProfile,
+    RemoteCommandRequest,
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -49,6 +54,11 @@ async def health_check():
         "aws_bedrock_region": bedrock_engine.region_name,
         "primary_track": "Fire TV (AI-Enhanced Viewing & Multi-Modal UX)",
         "mini_challenges": ["AWS Builder", "Open Source"],
+        "fire_tv_command_bus": {
+            "status": "enabled",
+            "transport": "Server-Sent Events (/api/events)",
+            "supported_commands": sorted(COMMAND_SET),
+        },
     }
 
 
@@ -80,6 +90,71 @@ async def api_ambient_adapt(profile: AmbientProfile):
             "content_safety_filter": profile.content_rating_cap,
         },
     }
+
+
+@app.post("/api/remote-command")
+async def api_remote_command(request: RemoteCommandRequest):
+    """
+    Dispatch a playback command to the paired Fire TV client.
+    Alexa+ and MCP tool callers use this channel to drive the living room TV
+    (play, pause, seek, switch_stream, open_xray, ...).
+    """
+    try:
+        event = command_bus.dispatch(request.command, request.argument, request.source)
+    except CommandValidationError as err:
+        raise HTTPException(status_code=422, detail=str(err))
+    return {
+        "status": "dispatched",
+        "event": event,
+        "queue_depth": command_bus.depth(),
+    }
+
+
+async def fire_tv_command_stream(last_event_id: int):
+    """SSE payload generator: emits Fire TV commands after last_event_id, then heartbeats."""
+    cursor = last_event_id
+    idle_ticks = 0
+    while True:
+        events = command_bus.events_since(cursor)
+        for event in events:
+            cursor = event["event_id"]
+            yield {
+                "event": "fire_tv_command",
+                "id": str(event["event_id"]),
+                "data": json.dumps(event),
+            }
+            idle_ticks = 0
+        if not events:
+            idle_ticks += 1
+            if idle_ticks % 30 == 0:
+                # SSE comment heartbeat keeps proxies from idling out the stream
+                yield {"comment": "keepalive"}
+        await asyncio.sleep(0.25)
+
+
+@app.get("/api/events")
+async def api_fire_tv_events(
+    request: Request,
+    since: int = Query(default=None, ge=0, description="Only stream events after this event_id"),
+):
+    """
+    Server-Sent Events stream of Fire TV remote commands.
+
+    - First-time subscribers (no ?since= and no Last-Event-ID header) receive
+      only commands dispatched from now on.
+    - Reconnecting clients automatically resume from their last received
+      event via the standard Last-Event-ID header (or explicit ?since=).
+    """
+    reconnect_id = request.headers.get("last-event-id", "")
+    if since is not None:
+        last_event_id = since
+    elif reconnect_id.isdigit():
+        last_event_id = int(reconnect_id)
+    else:
+        # Fresh subscription: skip replaying the entire bus history
+        last_event_id = command_bus.latest_event_id()
+
+    return EventSourceResponse(fire_tv_command_stream(last_event_id))
 
 
 # Mount the MCP Streamable HTTP ASGI app at /mcp

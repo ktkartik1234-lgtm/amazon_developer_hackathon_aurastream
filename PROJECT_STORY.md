@@ -92,9 +92,9 @@ AuraStream is architected as an end-to-end 3-tier system connecting edge Fire TV
 │  │                              TOOL ORCHESTRATOR                              │  │
 │  │  • `get_scene_telemetry`: Extracts timestamp, actors, objects, soundtrack   │  │
 │  │  • `analyze_frame_multimodal`: Vision reasoning on current video frame      │  │
-│  │  • `synthesize_trivia_card`: Generates structured interactive TV cards      │  │
 │  │  • `adapt_household_ambient`: Adjusts audio/subtitles for family/room       │  │
 │  │  • `generate_spoiler_free_recap`: Contextual safe plot catch-up             │  │
+│  │  • `dispatch_fire_tv_command`: Alexa+ drives the TV (SSE command bus)       │  │
 │  └──────────────────────────────────────┬──────────────────────────────────────┘  │
 └─────────────────────────────────────────┼─────────────────────────────────────────┘
                                           │
@@ -134,7 +134,8 @@ Documented with 6-field DevRel entries in [FRICTION_LOG.md](FRICTION_LOG.md) (qu
 
 ## Accomplishments that we're proud of
 
-- **51 Automated Tests Passing**: Comprehensive test suite covering unit tests, integration pipelines, intent routing, and regression assertions (`python -m pytest core/tests -v`).
+- **67 Automated Tests Passing**: Comprehensive test suite covering unit tests, integration pipelines, the Alexa-to-TV command bus, intent routing, and regression assertions (`python -m pytest core/tests -v`).
+- **Alexa+ Actually Drives the TV**: A real cross-device command bus (`POST /api/remote-command` → Server-Sent Events) plus a `dispatch_fire_tv_command` MCP tool — "Alexa, pause the video" pauses the living room screen, not just a chat response.
 - **Clockwork Video Demo Under 3 Minutes**: Storyboarded and verified a crisp 2-minute 45-second demonstration ([DEMO.md](DEMO.md)), strictly complying with the hackathon's $< 3:00$ minute limit.
 - **Genuine Runtime Technology Calls**: 100% real SDK imports and runtime calls across `boto3`, `mcp`, `fastapi`, and hardware keycodes—zero README-only vaporware.
 - **Open Source by Design**: MIT Licensed ([LICENSE](LICENSE)) to empower the Fire TV and developer ecosystem.

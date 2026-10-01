@@ -42,9 +42,9 @@
 │  │                              TOOL ORCHESTRATOR                              │  │
 │  │  • `get_scene_telemetry`: Extracts timestamp, actors, objects, soundtrack   │  │
 │  │  • `analyze_frame_multimodal`: Vision reasoning on current video frame      │  │
-│  │  • `synthesize_trivia_card`: Generates structured interactive TV cards      │  │
 │  │  • `adapt_household_ambient`: Adjusts audio/subtitles for family/room       │  │
 │  │  • `generate_spoiler_free_recap`: Contextual safe plot catch-up             │  │
+│  │  • `dispatch_fire_tv_command`: Alexa+ drives the TV (SSE command bus)       │  │
 │  └──────────────────────────────────────┬──────────────────────────────────────┘  │
 └─────────────────────────────────────────┼─────────────────────────────────────────┘
                                           │
@@ -75,6 +75,10 @@
   - `Escape` / `Backspace` / `Back` (Codes 4, 27): Dismiss drawer / Alexa card back to 100% full-bleed video.
   - `KeyV` (Voice Trigger): Activate Alexa bottom glowing cyan LED light-strip.
   - `KeyC` (CC Subtitles): Toggle synchronized dialogue and sports commentary subtitles.
+  - `]` / `[` (Codes 221, 219): Seek 10s forward / backward (remote fast-forward / rewind).
+  - `KeyR` (Restart): Reset playback to the beginning of the stream.
+  - `KeyA` (Ambient): Apply Adaptive Ambient Household Mode via `/api/ambient-adapt`.
+- **Command Bus Subscriber**: `mcpClient.js` consumes the Fire TV command bus (`GET /api/events`, Server-Sent Events) so Alexa+ and MCP tool callers drive playback live (play, pause, seek, switch_stream, ...).
 - **Visual Design**: Cinema-grade Prime Video aesthetic with Amazon Ember typography, frosted glass (`backdrop-filter: blur(24px)`), cyan glowing focus borders, and zero-clutter 4-second auto-hide fade.
 
 ### 2.2 Tier 2: Streamable HTTP MCP Server (`core/app/mcp/`)
@@ -83,8 +87,11 @@
   - `GET /mcp`: Server-Sent Events stream for real-time notifications and responses.
   - `POST /mcp`: JSON-RPC 2.0 message handler for client initialization, tool execution, and ping requests.
   - `GET /health`: Health check and system readiness probe.
-  - `GET /api/telemetry`: Canonical time-coded telemetry for all 4 video streams.
-  - `POST /api/query`: Intent Priority Router query interface with Bedrock Converse execution.
+  - `GET /api/telemetry`: Canonical time-coded telemetry for all video streams.
+  - `POST /api/multimodal-query`: Intent Priority Router query interface with Bedrock Converse execution.
+  - `POST /api/ambient-adapt`: Household ambient adaptation (dialogue boost, subtitle sizing, rating cap).
+  - `POST /api/remote-command`: Fire TV Command Bus dispatch (Alexa+ / MCP drives the TV).
+  - `GET /api/events`: Server-Sent Events stream of Fire TV commands with Last-Event-ID resume.
 - **Schemas**: Strict Pydantic v2 schemas validating all inputs, responses, and tool arguments.
 
 ### 2.3 Tier 3: AWS Builder Services (`core/app/aws/`)
@@ -110,10 +117,13 @@ amazon_developer_hackathon_aurastream/
 ├── README.md                     # Documentation, quickstart & judging guide
 ├── pyproject.toml                # Editable Python package registration (CLI: aurastream)
 ├── run.py                        # Standalone runner with dynamic sys.path resolution
+├── Dockerfile                    # Containerized one-command judge deployment
+├── .github/workflows/ci.yml      # CI: pytest matrix (3.11/3.13) + Docker build
 ├── core/                         # Tier 2: Backend MCP Server & AWS Integration
 │   └── app/
 │       ├── __init__.py
 │       ├── main.py               # FastAPI server entry point & static mount
+│       ├── commands.py           # Fire TV command bus (Alexa+ -> TV over SSE)
 │       ├── aws/                  # AWS Bedrock & Telemetry engine
 │       │   ├── __init__.py
 │       │   ├── bedrock.py        # Converse API, Intent Router, & Circuit Breaker
@@ -126,10 +136,11 @@ amazon_developer_hackathon_aurastream/
 │       └── models/               # Pydantic data schemas
 │           ├── __init__.py
 │           └── schemas.py
-│   └── tests/                    # Automated pytest test suite (51/51 tests passing)
+│   └── tests/                    # Automated pytest test suite (67/67 tests passing)
 │       ├── __init__.py
 │       ├── test_api_endpoints.py
 │       ├── test_bedrock.py
+│       ├── test_command_bus.py   # Command bus, REST dispatch & SSE generator tests
 │       ├── test_intent_router.py
 │       ├── test_mcp_tools.py
 │       ├── test_models.py

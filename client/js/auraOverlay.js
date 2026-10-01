@@ -113,6 +113,20 @@ class AuraOverlayManager {
       });
     });
 
+    // Free-text Alexa+ query input (browser / simulator demos)
+    const freeform = document.getElementById('alexa-freeform');
+    const freeformInput = document.getElementById('alexa-freeform-input');
+    if (freeform && freeformInput) {
+      freeform.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = freeformInput.value.trim();
+        if (!query) return;
+        freeformInput.value = '';
+        freeformInput.blur();
+        this.executeAlexaQuery(query);
+      });
+    }
+
     window.addEventListener('tv:voice-trigger', () => {
       this.toggleAlexaBar();
     });
@@ -163,6 +177,17 @@ class AuraOverlayManager {
   async executeAlexaQuery(query) {
     if (this.alexaTranscriptEl) {
       this.alexaTranscriptEl.innerText = `"${query}"`;
+    }
+
+    // Immediate listening state while Bedrock reasons over the frame
+    this.isAlexaCardOpen = true;
+    if (this.alexaBarEl) this.alexaBarEl.style.display = 'none';
+    if (this.alexaCardEl) this.alexaCardEl.style.display = 'block';
+    if (this.alexaBodyEl) {
+      this.alexaBodyEl.innerText = 'Analyzing the scene with Amazon Bedrock...';
+    }
+    if (this.alexaModelTagEl) {
+      this.alexaModelTagEl.innerText = 'Amazon Bedrock • Reasoning';
     }
 
     const player = window.PlayerInstance;

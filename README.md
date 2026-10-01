@@ -22,6 +22,7 @@ Traditional streaming interfaces treat the television as a passive display. View
 - **Multi-Modal AI Co-Pilot**: Combines Fire TV remote D-Pad spatial navigation, Alexa+ voice queries, and glassmorphism HUD overlays into a single, cohesive 10-foot living room flow.
 - **Deep AWS Bedrock Reasoning**: Leverages **Amazon Bedrock (Claude 3.5 Sonnet / Nova Pro)** to perform zero-lag visual frame analysis, real-time sports tactical breakdowns, and spoiler-free storyline recaps.
 - **Standardized MCP 2025-11-25+ Streamable HTTP Core**: Powered by an underlying Model Context Protocol (MCP) server exposing native living room tools for cross-device orchestration between Fire TV and Alexa+.
+- **Real Cross-Device Control**: Alexa+ and MCP tool callers drive the TV live through the Fire TV Command Bus (`POST /api/remote-command` → Server-Sent Events) — "Alexa, pause the video" actually pauses the stream.
 
 ---
 
@@ -67,6 +68,7 @@ Traditional streaming interfaces treat the television as a passive display. View
 │  • `analyze_frame_multimodal(timestamp, user_query, image_base64)`                │
 │  • `adapt_household_ambient(viewer_profile, ambient_noise_level)`                 │
 │  • `generate_spoiler_free_recap(current_time, stream_id)`                         │
+│  • `dispatch_fire_tv_command(command, argument)`  → SSE → Fire TV playback        │
 └─────────────────────────────────────────┬─────────────────────────────────────────┘
                                           │
                         Boto3 / AWS SDK   │ (Bedrock Runtime Converse API)
@@ -95,7 +97,7 @@ pip install -e .
 ```
 
 ### Step 2: Run Automated Test Suite
-Verify that all 51 unit, integration, intent router, and regression tests pass:
+Verify that all 67 unit, integration, command-bus, intent router, and regression tests pass:
 ```bash
 python -m pytest core/tests -v
 ```
@@ -111,6 +113,12 @@ python run.py --reload
 Open your browser or Fire TV WebView simulator to:
 **`http://localhost:8000/`** (Press `F11` for true 10-foot fullscreen TV experience)
 
+### Alternative: One-Command Docker Deployment
+```bash
+docker build -t aurastream .
+docker run --rm -p 8000:8000 aurastream
+```
+
 ---
 
 ## 5. 10-Foot Remote Controls & Navigation Legend
@@ -122,9 +130,11 @@ Open your browser or Fire TV WebView simulator to:
 | **D-Pad Up / Down** | `ArrowUp` / `ArrowDown` | `19` / `20` | Traverse between X-Ray Tabs and Content Tray cards |
 | **Select / Center** | `Enter` | `13` / `23` / `66` | Activate selected tab or stream item |
 | **Back Button** | `Escape` / `Backspace` | `4` / `27` | Dismiss X-Ray drawer / Alexa card to full-bleed video |
-| **Alexa Voice Trigger** | `V` | Key `V` | Trigger Alexa+ bottom glowing cyan LED light-bar |
+| **Alexa Voice Trigger** | `V` | Key `V` | Trigger Alexa+ bottom glowing cyan LED light-bar (free-text "Ask Alexa+" input included) |
 | **Subtitle / CC Toggle** | `C` | Key `C` / `CC` | Toggle synchronized dialog and sports commentary subtitles |
 | **Fast Forward / Rewind** | `]` / `[` | `228` / `227` | Seek 10s forward or backward in stream |
+| **Restart Stream** | `R` | Key `R` | Reset playback to the beginning |
+| **Ambient Adapt** | `A` | Key `A` | Apply Adaptive Ambient Household Mode (dialogue boost, subtitle sizing, rating cap) |
 
 ---
 
