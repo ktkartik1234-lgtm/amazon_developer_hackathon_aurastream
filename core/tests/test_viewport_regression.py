@@ -4,6 +4,7 @@ Validates that 1080p, developer laptop (1536x864), and 720p viewports render hea
 """
 
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -19,6 +20,10 @@ def get_browser_exe():
     for p in CHROME_PATHS:
         if os.path.exists(p):
             return p
+    for candidate in ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser"]:
+        found = shutil.which(candidate)
+        if found:
+            return found
     return None
 
 
@@ -46,6 +51,9 @@ def test_headless_viewport_screenshot(width, height, viewport_name):
         cmd = [
             browser_exe,
             "--headless=new",
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
             f"--user-data-dir={user_data_dir}",
             f"--screenshot={out_png}",
             f"--window-size={width},{height}",
