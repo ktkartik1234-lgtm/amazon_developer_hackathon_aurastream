@@ -31,12 +31,17 @@ Traditional streaming interfaces treat the television as a passive display. View
 | Prime Video X-Ray Slide-Up Drawer | Alexa+ Voice Remote & Bedrock Reasoning |
 | :---: | :---: |
 | ![Prime Video X-Ray Drawer](client/previews/cinema_xray_open.png) | ![Alexa+ Voice Remote](client/previews/cinema_alexa_bar.png) |
-| **Real-time Cast Matching (99% Bedrock Match)** | **Glowing Cyan LED Bar & Spoiler-Free Recap** |
+| **Real-time Cast & Scene Trivia (`In Scene`)** | **Glowing Cyan LED Bar & Spoiler-Shielded Bedrock Card** |
 
-| Synchronized Soundtrack Detection | Full-Bleed Cinema Viewing (Auto-Hide) |
+| Proactive Ambient Scene Trigger | Live Tactical AI & MCP Telemetry |
+| :---: | :---: |
+| ![Proactive Ambient Toast](client/previews/cinema_ambient_toast.png) | ![Tactical AI Telemetry](client/previews/cinema_tactical_ai.png) |
+| **Non-Blocking Scene Event Prompt (`0:42`)** | **32ms Retrieval Latency Across 5 MCP Tools** |
+
+| Synchronized Soundtrack Detection | Full-Bleed Cinema Viewing |
 | :---: | :---: |
 | ![Soundtrack Detection](client/previews/cinema_music_tab.png) | ![Cinema Mode](client/previews/cinema_pure_video.png) |
-| **Animated Audio Waves & Amazon Music** | **Zero UI Clutter with 4.0s Auto-Fade** |
+| **Orchestral Score Sync (`Jan Morgenstern — "The Quest"`)** | **1080p24 Cinema Stream with 4.0s Auto-Fade** |
 
 ---
 
@@ -146,7 +151,7 @@ docker run --rm -p 8000:8000 aurastream
 - [x] **MCP Spec Compliance**: Conforms to MCP Specification `2025-11-25+` via Streamable HTTP transport mounted at `/mcp`.
 - [x] **Runtime Technology Calls**: Real imports and runtime execution of `boto3`, `mcp`, `fastapi`, and spatial navigation events.
 - [x] **Friction Log Bonus**: Documented first-party feedback and friction logs in `FRICTION_LOG.md` (up to **+10% judging bonus**).
-- [x] **Demo Video Limit**: Designed for a concise 2-minute 45-second high-impact demonstration (< 3:00 minutes).
+- [x] **Demo Video Limit**: Frame-synchronized 56.3-second (`0:56`) 1080p24 demonstration documented in [`DEMO.md`](DEMO.md) (< 3:00 minutes).
 
 ---
 
