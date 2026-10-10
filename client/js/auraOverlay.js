@@ -113,6 +113,14 @@ class AuraOverlayManager {
       });
     });
 
+    // Live Microphone button (Web Speech API)
+    const micBtn = document.getElementById('alexa-mic-btn');
+    if (micBtn) {
+      micBtn.addEventListener('click', () => {
+        this.startMicrophoneRecognition();
+      });
+    }
+
     // Free-text Alexa+ query input (browser / simulator demos)
     const freeform = document.getElementById('alexa-freeform');
     const freeformInput = document.getElementById('alexa-freeform-input');
@@ -142,6 +150,99 @@ class AuraOverlayManager {
     });
   }
 
+  playAlexaWakeChime() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const now = ctx.currentTime;
+      const playTone = (freq, start, dur) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(0.01, start);
+        gain.gain.exponentialRampToValueAtTime(0.18, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + dur);
+      };
+      playTone(523.25, now, 0.14);
+      playTone(783.99, now + 0.13, 0.26);
+    } catch (err) {
+      // Ignore audio autoplay restrictions
+    }
+  }
+
+  startMicrophoneRecognition() {
+    this.playAlexaWakeChime();
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      if (window.showToast) {
+        window.showToast('Alexa+ Voice Input', 'Type your query or click a prompt chip below.');
+      }
+      return;
+    }
+
+    try {
+      if (this._activeRecognition) {
+        this._activeRecognition.abort();
+      }
+      const recognition = new SpeechRec();
+      this._activeRecognition = recognition;
+      recognition.lang = 'en-US';
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      if (this.alexaTranscriptEl) {
+        this.alexaTranscriptEl.innerText = 'Listening to microphone... Speak now';
+      }
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (this.alexaTranscriptEl) {
+          this.alexaTranscriptEl.innerText = `"${transcript}"`;
+        }
+        if (event.results[event.results.length - 1].isFinal && transcript.trim()) {
+          this.executeAlexaQuery(transcript.trim());
+        }
+      };
+
+      recognition.onerror = () => {
+        if (this.alexaTranscriptEl) {
+          this.alexaTranscriptEl.innerText = '"Alexa — wait, what did he just drop?"';
+        }
+      };
+
+      recognition.start();
+    } catch (err) {
+      console.warn('SpeechRecognition error:', err);
+    }
+  }
+
+  speakAlexaText(text) {
+    try {
+      if (!window.speechSynthesis || !text) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 1.03;
+      utter.pitch = 1.0;
+      const voices = window.speechSynthesis.getVoices() || [];
+      const preferred = voices.find(
+        (v) => v.lang.startsWith('en') && (v.name.includes('Ava') || v.name.includes('Aria') || v.name.includes('Zira') || v.name.includes('Google US English'))
+      );
+      if (preferred) utter.voice = preferred;
+      window.speechSynthesis.speak(utter);
+    } catch (err) {
+      // Ignore speech synthesis errors in headless environments
+    }
+  }
+
   toggleAlexaBar() {
     if (this.isAlexaBarOpen) {
       this.closeAlexaBar();
@@ -152,6 +253,7 @@ class AuraOverlayManager {
 
   openAlexaBar() {
     this.isAlexaBarOpen = true;
+    this.playAlexaWakeChime();
     if (this.alexaBarEl) {
       this.alexaBarEl.style.display = 'flex';
     }
@@ -179,23 +281,38 @@ class AuraOverlayManager {
       this.alexaTranscriptEl.innerText = `"${query}"`;
     }
 
-    // Immediate listening state while Bedrock reasons over the frame
+    // Immediate listening state while Alexa+ & Bedrock reason over the frame
     this.isAlexaCardOpen = true;
     if (this.alexaBarEl) this.alexaBarEl.style.display = 'none';
     if (this.alexaCardEl) this.alexaCardEl.style.display = 'block';
     if (this.alexaBodyEl) {
-      this.alexaBodyEl.innerText = 'Analyzing the scene with Amazon Bedrock...';
+      this.alexaBodyEl.innerText = 'Analyzing the scene with Alexa+ & Amazon Bedrock...';
     }
     if (this.alexaModelTagEl) {
-      this.alexaModelTagEl.innerText = 'Amazon Bedrock • Reasoning';
+      this.alexaModelTagEl.innerText = 'Alexa+ Skill • Amazon Bedrock';
     }
 
     const player = window.PlayerInstance;
     const streamId = player ? player.activeStreamId : 'stream_sintel';
-    const currentTime = player ? player.currentTime : 0;
+    const currentTime = player ? player.currentTime : 42.0;
     const frameBase64 = player ? player.captureFrameBase64() : null;
 
-    // Send query to AWS Bedrock via AuraStream API
+    // 1. Route through the official Alexa Skills Kit (ASK) Webhook (/api/alexa/webhook)
+    if (window.AuraStreamAPI && window.AuraStreamAPI.sendAlexaUtterance) {
+      const askEnv = await window.AuraStreamAPI.sendAlexaUtterance(query, streamId, currentTime);
+      if (askEnv && askEnv.response && askEnv.response.outputSpeech) {
+        const spokenText = askEnv.response.outputSpeech.text || askEnv.response.card?.text || '';
+        const meta = askEnv.aurastream_meta || {};
+        this.showAlexaResponse(query, {
+          summary: spokenText,
+          model_used: meta.model_used || 'Amazon Bedrock • Claude 3.5 Sonnet',
+          confidence_score: meta.confidence_score || 0.98,
+        });
+        return;
+      }
+    }
+
+    // 2. Fallback to direct multimodal query endpoint
     const res = await window.AuraStreamAPI.sendMultimodalQuery(
       streamId,
       currentTime,
@@ -213,12 +330,16 @@ class AuraOverlayManager {
     if (this.alexaCardEl) {
       this.alexaCardEl.style.display = 'block';
     }
+    const answerText = res.summary || (res.insights && res.insights[0]) || 'Analysis complete.';
     if (this.alexaBodyEl) {
-      this.alexaBodyEl.innerText = res.summary || (res.insights && res.insights[0]) || 'Analysis complete.';
+      this.alexaBodyEl.innerText = answerText;
     }
     if (this.alexaModelTagEl) {
       this.alexaModelTagEl.innerText = `${res.model_used} • ${(res.confidence_score * 100).toFixed(0)}% Confidence`;
     }
+
+    // Speak the Alexa+ response aloud
+    this.speakAlexaText(answerText);
 
     // Auto-switch to the relevant X-Ray tab for rich context
     const qLower = query.toLowerCase();
@@ -235,6 +356,9 @@ class AuraOverlayManager {
 
   closeAlexaCard() {
     this.isAlexaCardOpen = false;
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
     if (this.alexaCardEl) {
       this.alexaCardEl.style.display = 'none';
     }

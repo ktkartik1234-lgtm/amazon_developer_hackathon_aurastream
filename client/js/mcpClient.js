@@ -133,6 +133,25 @@ class AuraStreamClient {
       };
     }
   }
+
+  async sendAlexaUtterance(utterance, streamId = 'stream_sintel', timestamp = 42.0) {
+    try {
+      const res = await fetch(`${this.baseUrl}/api/alexa/webhook`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          utterance,
+          stream_id: streamId,
+          timestamp
+        })
+      });
+      if (!res.ok) throw new Error(`Alexa webhook HTTP error ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.warn('Alexa webhook fallback:', err);
+      return null;
+    }
+  }
 }
 
 window.AuraStreamAPI = new AuraStreamClient();

@@ -1,0 +1,145 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "aura stream",
+      "intents": [
+        {
+          "name": "AskSceneIntent",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "wait {query}",
+            "what did he just drop",
+            "ask {query}",
+            "tell me {query}",
+            "explain {query}"
+          ]
+        },
+        {
+          "name": "WhoIsOnScreenIntent",
+          "slots": [],
+          "samples": [
+            "who is on screen right now",
+            "who is that actor",
+            "which characters are in this scene",
+            "show x-ray cast"
+          ]
+        },
+        {
+          "name": "WhatSongIntent",
+          "slots": [],
+          "samples": [
+            "what song is playing right now",
+            "what soundtrack is this",
+            "who composed this music",
+            "identify the score in this scene"
+          ]
+        },
+        {
+          "name": "SpoilerFreeRecapIntent",
+          "slots": [],
+          "samples": [
+            "catch me up without spoilers",
+            "give me a spoiler free recap",
+            "what did I miss so far",
+            "summarize the plot up to this timestamp"
+          ]
+        },
+        {
+          "name": "TacticalBreakdownIntent",
+          "slots": [],
+          "samples": [
+            "explain this tactical formation",
+            "what tactics are they using",
+            "show live tactical telemetry",
+            "what is the expected goals and formation"
+          ]
+        },
+        {
+          "name": "SwitchStreamIntent",
+          "slots": [
+            {
+              "name": "streamName",
+              "type": "StreamTitleSlot"
+            }
+          ],
+          "samples": [
+            "switch to {streamName}",
+            "play {streamName}",
+            "watch {streamName}"
+          ]
+        },
+        {
+          "name": "AMAZON.PauseIntent",
+          "samples": [
+            "pause the video",
+            "pause playback"
+          ]
+        },
+        {
+          "name": "AMAZON.ResumeIntent",
+          "samples": [
+            "resume the video",
+            "continue watching",
+            "play the movie"
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        }
+      ],
+      "types": [
+        {
+          "name": "StreamTitleSlot",
+          "values": [
+            {
+              "id": "stream_sintel",
+              "name": {
+                "value": "Sintel",
+                "synonyms": [
+                  "Sintel The Dragon's Ascent",
+                  "dragon movie"
+                ]
+              }
+            },
+            {
+              "id": "stream_sports_soccer",
+              "name": {
+                "value": "Champions Cup",
+                "synonyms": [
+                  "sports",
+                  "soccer",
+                  "football",
+                  "Madrid vs Manchester"
+                ]
+              }
+            },
+            {
+              "id": "stream_oceans",
+              "name": {
+                "value": "Blue Planet",
+                "synonyms": [
+                  "oceans",
+                  "documentary"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

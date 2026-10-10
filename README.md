@@ -102,7 +102,7 @@ pip install -e .
 ```
 
 ### Step 2: Run Automated Test Suite
-Verify that all 67 unit, integration, command-bus, intent router, and regression tests pass:
+Verify that all 73 unit, Alexa Skills Kit (ASK v1.0), integration, command-bus, intent router, and regression tests pass:
 ```bash
 python -m pytest core/tests -v
 ```
@@ -117,6 +117,10 @@ python run.py --reload
 ### Step 4: Open Fire TV 10-Foot Experience
 Open your browser or Fire TV WebView simulator to:
 **`http://localhost:8000/`** (Press `F11` for true 10-foot fullscreen TV experience)
+
+### Step 5: Live Alexa+ Voice Connection (Browser Mic & Alexa Developer Console)
+- **In-Browser Live Microphone & Voice Synthesis**: Press **`V`** on `http://localhost:8000/` and click **`🎙️ MIC`** to speak directly into your microphone (via Web Speech API). Your query routes through `POST /api/alexa/webhook`, updates the Fire TV HUD via SSE, and speaks Alexa's response aloud via `SpeechSynthesis`.
+- **Alexa Developer Console (ASK v1.0 Skill Package)**: Import [`alexa_skill/skill.json`](alexa_skill/skill.json) and [`alexa_skill/interactionModels/custom/en-US.json`](alexa_skill/interactionModels/custom/en-US.json) into the [Amazon Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) and point the HTTPS endpoint to `/api/alexa/webhook` (which returns compliant ASK v1.0 `SSML` + `Alexa.Presentation.APL.RenderDocument` directives).
 
 ### Alternative: One-Command Docker Deployment
 ```bash
@@ -135,7 +139,7 @@ docker run --rm -p 8000:8000 aurastream
 | **D-Pad Up / Down** | `ArrowUp` / `ArrowDown` | `19` / `20` | Traverse between X-Ray Tabs and Content Tray cards |
 | **Select / Center** | `Enter` | `13` / `23` / `66` | Activate selected tab or stream item |
 | **Back Button** | `Escape` / `Backspace` | `4` / `27` | Dismiss X-Ray drawer / Alexa card to full-bleed video |
-| **Alexa Voice Trigger** | `V` | Key `V` | Trigger Alexa+ bottom glowing cyan LED light-bar (free-text "Ask Alexa+" input included) |
+| **Alexa Voice Trigger** | `V` | Key `V` | Trigger Alexa+ bottom cyan LED bar, live `🎙️ MIC` voice recognition, and `/api/alexa/webhook` |
 | **Subtitle / CC Toggle** | `C` | Key `C` / `CC` | Toggle synchronized dialog and sports commentary subtitles |
 | **Fast Forward / Rewind** | `]` / `[` | `228` / `227` | Seek 10s forward or backward in stream |
 | **Restart Stream** | `R` | Key `R` | Reset playback to the beginning |
@@ -145,11 +149,12 @@ docker run --rm -p 8000:8000 aurastream
 
 ## 6. Amazon Developer Hackathon Compliance Checklist
 
-- [x] **Primary Track**: Fire TV (works cleanly in Fire TV / Vega simulator and TV WebView).
+- [x] **Primary Tracks**: Fire TV & Alexa+ (works cleanly in Fire TV / Vega simulator, TV WebView, and ASK v1.0 webhook).
+- [x] **Alexa Skills Kit (ASK v1.0) & APL Integration**: Complete `alexa_skill/skill.json`, `en-US.json` interaction model, and `POST /api/alexa/webhook` returning `SSML` + `Alexa.Presentation.APL.RenderDocument`.
 - [x] **Mini-Challenge 1 (AWS Builder)**: Direct Amazon Bedrock Converse API multi-modal integration in `core/app/aws/bedrock.py`.
 - [x] **Mini-Challenge 2 (Open Source)**: Standalone MIT Open Source License in `LICENSE`.
 - [x] **MCP Spec Compliance**: Conforms to MCP Specification `2025-11-25+` via Streamable HTTP transport mounted at `/mcp`.
-- [x] **Runtime Technology Calls**: Real imports and runtime execution of `boto3`, `mcp`, `fastapi`, and spatial navigation events.
+- [x] **Runtime Technology Calls**: Real imports and runtime execution of `boto3`, `mcp`, `fastapi`, ASK v1.0 envelopes, and spatial navigation events.
 - [x] **Friction Log Bonus**: Documented first-party feedback and friction logs in `FRICTION_LOG.md` (up to **+10% judging bonus**).
 - [x] **Demo Video Limit**: Frame-synchronized 56.3-second (`0:56`) 1080p24 demonstration documented in [`DEMO.md`](DEMO.md) (< 3:00 minutes).
 

@@ -1,0 +1,67 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "summary": "AuraStream: Ambient Living Room Co-Pilot & Multi-Modal AI Companion for Amazon Fire TV and Alexa+",
+          "examplePhrases": [
+            "Alexa, ask AuraStream wait what did he just drop",
+            "Alexa, ask AuraStream catch me up without spoilers",
+            "Alexa, ask AuraStream what song is playing right now"
+          ],
+          "keywords": [
+            "Fire TV",
+            "Alexa Plus",
+            "X-Ray",
+            "Amazon Bedrock",
+            "MCP",
+            "Streaming",
+            "Sports Tactics"
+          ],
+          "name": "AuraStream",
+          "description": "AuraStream connects Amazon Alexa+ and Fire TV via the Model Context Protocol (MCP 2025-11-25+) and Amazon Bedrock Converse API. Ask about characters on screen, soundtrack scores, timestamp-locked spoiler-free recaps, live sports tactical formations, or control Fire TV playback hands-free."
+        }
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Start the AuraStream server (python run.py) and expose /api/alexa/webhook via HTTPS (e.g., ngrok or AWS App Runner), or test directly via the built-in Alexa Simulator endpoint.",
+      "category": "MOVIES_AND_TV",
+      "distributionCountries": []
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "https://localhost:8000/api/alexa/webhook",
+          "sslCertificateType": "Wildcard"
+        },
+        "interfaces": [
+          {
+            "type": "ALEXA_PRESENTATION_APL",
+            "supportedViewports": [
+              {
+                "mode": "TV",
+                "shape": "RECTANGLE",
+                "minWidth": 960,
+                "maxWidth": 1920,
+                "minHeight": 540,
+                "maxHeight": 1080
+              },
+              {
+                "mode": "HUB",
+                "shape": "RECTANGLE",
+                "minWidth": 1024,
+                "maxWidth": 1920,
+                "minHeight": 600,
+                "maxHeight": 1080
+              }
+            ]
+          },
+          {
+            "type": "VIDEO_APP"
+          }
+        ]
+      }
+    },
+    "manifestVersion": "1.0",
+    "permissions": []
+  }
+}

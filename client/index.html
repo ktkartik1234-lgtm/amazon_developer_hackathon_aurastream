@@ -287,17 +287,18 @@
           </div>
         </div>
         <div class="alexa-prompt-wrap">
-          <div class="alexa-title">Alexa+ Voice Remote</div>
-          <div id="alexa-active-transcript" class="alexa-transcript">"Alexa, who is on screen right now?"</div>
+          <div class="alexa-title">Alexa+ Voice Remote • Connected</div>
+          <div id="alexa-active-transcript" class="alexa-transcript">"Alexa — wait, what did he just drop?"</div>
         </div>
         <form id="alexa-freeform" class="alexa-freeform" autocomplete="off">
+          <button type="button" id="alexa-mic-btn" class="alexa-ask-btn" title="Speak into Microphone" style="margin-right: 6px; background: rgba(0, 214, 255, 0.2); border: 1px solid #00D6FF; color: #00D6FF;">🎙️ MIC</button>
           <input id="alexa-freeform-input" type="text" maxlength="120"
-                 placeholder="Ask Alexa+ anything about this scene..." aria-label="Ask Alexa+ a question">
+                 placeholder="Speak or type to Alexa+..." aria-label="Ask Alexa+ a question">
           <button type="submit" class="alexa-ask-btn">ASK</button>
         </form>
         <div class="alexa-chips-row">
-          <button class="alexa-chip focused" data-query="Who is on screen?" tabindex="0">Who's on screen?</button>
-          <button class="alexa-chip" data-query="Explain this tactical soccer play" tabindex="0">Tactical breakdown</button>
+          <button class="alexa-chip focused" data-query="Wait, what did he just drop?" tabindex="0">What did he drop?</button>
+          <button class="alexa-chip" data-query="Who is on screen?" tabindex="0">Who's on screen?</button>
           <button class="alexa-chip" data-query="What soundtrack is playing right now?" tabindex="0">Soundtrack</button>
           <button class="alexa-chip" data-query="Catch me up (Spoiler-Free)" tabindex="0">Spoiler-free recap</button>
         </div>

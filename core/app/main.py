@@ -16,6 +16,7 @@ from sse_starlette.sse import EventSourceResponse
 from .mcp.server import mcp_server, mcp_asgi_app
 from .aws.telemetry import get_telemetry_for_timestamp
 from .aws.bedrock import bedrock_engine
+from .alexa import handle_alexa_Envelope
 from .commands import command_bus, CommandValidationError, COMMAND_SET
 from .models.schemas import (
     MultiModalAnalysisRequest,
@@ -27,6 +28,7 @@ from .models.schemas import (
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 CLIENT_DIR = BASE_DIR / "client"
+ALEXA_SKILL_DIR = BASE_DIR / "alexa_skill"
 
 app = FastAPI(
     title="AuraStream: Living Room Intelligence Engine",
@@ -52,14 +54,53 @@ async def health_check():
         "service": "AuraStream Living Room Intelligence",
         "mcp_version": "2025-11-25+ Streamable HTTP",
         "aws_bedrock_region": bedrock_engine.region_name,
-        "primary_track": "Fire TV (AI-Enhanced Viewing & Multi-Modal UX)",
+        "primary_track": "Fire TV & Alexa+ (AI-Enhanced Viewing & Multi-Modal UX)",
         "mini_challenges": ["AWS Builder", "Open Source"],
+        "alexa_plus_skill": {
+            "status": "connected",
+            "webhook_endpoint": "/api/alexa/webhook",
+            "manifest_endpoint": "/api/alexa/skill-manifest",
+            "interaction_model_endpoint": "/api/alexa/interaction-model",
+            "supports_apl": True,
+        },
         "fire_tv_command_bus": {
             "status": "enabled",
             "transport": "Server-Sent Events (/api/events)",
             "supported_commands": sorted(COMMAND_SET),
         },
     }
+
+
+@app.post("/api/alexa/webhook")
+async def api_alexa_webhook(request: Request):
+    """
+    Official Amazon Alexa Skills Kit (ASK v1.0) & Alexa+ Webhook Endpoint.
+    Accepts standard ASK JSON Request Envelopes (LaunchRequest, IntentRequest, SessionEndedRequest)
+    as well as direct browser Web Speech API microphone utterances.
+    """
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+    return handle_alexa_Envelope(payload)
+
+
+@app.get("/api/alexa/skill-manifest")
+async def api_alexa_skill_manifest():
+    """Return the Alexa Skills Kit (ASK) skill.json manifest for 1-click Alexa Developer Console import."""
+    manifest_file = ALEXA_SKILL_DIR / "skill.json"
+    if manifest_file.exists():
+        return json.loads(manifest_file.read_text(encoding="utf-8"))
+    return {"status": "missing"}
+
+
+@app.get("/api/alexa/interaction-model")
+async def api_alexa_interaction_model():
+    """Return the Alexa Skills Kit (ASK) en-US interaction model JSON."""
+    model_file = ALEXA_SKILL_DIR / "interactionModels" / "custom" / "en-US.json"
+    if model_file.exists():
+        return json.loads(model_file.read_text(encoding="utf-8"))
+    return {"status": "missing"}
 
 
 @app.get("/api/telemetry", response_model=SceneTelemetry)
